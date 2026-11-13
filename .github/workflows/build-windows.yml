@@ -5,6 +5,9 @@ on:
   push:
     tags: ['v*']
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -15,8 +18,23 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # One installer that works on 64-bit, 32-bit and ARM Windows 10/11.
       - run: npm run dist:win
       - uses: actions/upload-artifact@v4
         with:
           name: IDCraft-Studio-Windows
-          path: release/*.exe
+          path: release/IDCraft-Studio-Setup.exe
+
+      # On a version tag (e.g. v1.0.0), publish a GitHub Release so the
+      # installer gets a permanent download link.
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          RELEASE_REPO: ${{ vars.RELEASE_REPO || github.repository }}
+        shell: bash
+        run: |
+          gh release create "${GITHUB_REF_NAME}" release/IDCraft-Studio-Setup.exe \
+            --repo "$RELEASE_REPO" \
+            --title "IDCraft Studio ${GITHUB_REF_NAME}" \
+            --notes "Download **IDCraft-Studio-Setup.exe** below, run it, and follow the installer. Works on Windows 10 and 11 (64-bit, 32-bit and ARM)."

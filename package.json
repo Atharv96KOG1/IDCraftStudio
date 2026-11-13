@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",
     "app:start": "npm run build && electron .",
-    "dist:win": "npm run build && electron-builder --win nsis --x64 --publish never",
+    "dist:win": "npm run build && electron-builder --win --publish never",
     "dist:win-portable": "npm run build && electron-builder --win portable --x64 --publish never"
   },
   "dependencies": {
@@ -51,14 +51,24 @@
       "electron/**"
     ],
     "win": {
-      "target": "nsis",
-      "artifactName": "IDCraft-Studio-Setup-${version}.${ext}"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32", "arm64"]
+        }
+      ],
+      "artifactName": "IDCraft-Studio-Setup.${ext}"
     },
     "nsis": {
       "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "IDCraft Studio"
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "shortcutName": "IDCraft Studio",
+      "uninstallDisplayName": "IDCraft Studio"
     }
   }
 }
