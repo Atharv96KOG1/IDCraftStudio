@@ -44,7 +44,8 @@
     "appId": "com.idcraft.studio",
     "productName": "IDCraft Studio",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "build"
     },
     "files": [
       "dist/**",
@@ -54,10 +55,15 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32", "arm64"]
+          "arch": [
+            "x64",
+            "ia32",
+            "arm64"
+          ]
         }
       ],
-      "artifactName": "IDCraft-Studio-Setup.${ext}"
+      "artifactName": "IDCraft-Studio-Setup.${ext}",
+      "icon": "build/icon.png"
     },
     "nsis": {
       "oneClick": false,
@@ -68,7 +74,9 @@
       "createStartMenuShortcut": true,
       "runAfterFinish": true,
       "shortcutName": "IDCraft Studio",
-      "uninstallDisplayName": "IDCraft Studio"
-    }
+      "uninstallDisplayName": "IDCraft Studio",
+      "deleteAppDataOnUninstall": false
+    },
+    "copyright": "Copyright © 2026 IDCraft Studio"
   }
 }
