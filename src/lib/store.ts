@@ -142,6 +142,10 @@ export const useStore = create<State>((set, get) => ({
     const t = get().template;
     if (!t) return;
     const el = { ...makeCentered(type, t), ...patch } as CardElement;
+    if (patch && ('w' in patch || 'h' in patch) && !('x' in patch)) {
+      el.x = Math.round(((t.widthMm - el.w) / 2) * 10) / 10;
+      el.y = Math.round(((t.heightMm - el.h) / 2) * 10) / 10;
+    }
     const existing = t[get().side].elements.filter((e) => e.type === type).length;
     if (existing) el.name = `${el.name} ${existing + 1}`;
     get().mutate((d) => d[get().side].elements.push(el));

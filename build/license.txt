@@ -1,0 +1,15 @@
+IDCraft Studio – End User Licence Agreement
+
+1. Trial. You may use IDCraft Studio free of charge for 15 days on one computer. The trial runs once per computer; removing and installing the software again does not restart it.
+
+2. Licence. After the trial a valid licence key is required. A key is issued for the licensee named in it and, unless stated otherwise, for one computer.
+
+3. Restrictions. You may not copy, resell, reverse engineer, modify or bypass the licensing of the software, or share licence keys.
+
+4. Your data. Templates, records and photos are stored only on your computer. You are responsible for backing them up and for having the right to use the personal data and photos you enter.
+
+5. Fonts and components. Bundled fonts and AI models are open-source and remain the property of their authors (see the licence files included with the program).
+
+6. No warranty. The software is provided "as is" without warranty of any kind. The publisher is not liable for any loss arising from its use.
+
+By clicking "I Agree" you accept these terms.

@@ -5,13 +5,14 @@ import { useFonts } from './lib/fonts';
 import { Designer } from './components/Designer';
 import { Records } from './components/Records';
 import { TopBar, type Tab } from './components/TopBar';
-import { ActivationScreen } from './components/License';
+import { ActivationScreen, WelcomeWizard } from './components/License';
 import { getLicense, type LicenseStatus } from './lib/license';
 
 export default function App() {
   const template = useStore((s) => s.template);
   const saveState = useStore((s) => s.saveState);
-  const [tab, setTab] = useState<Tab>('design');
+  const [tab, setTab] = useState<Tab>('records');
+  const [welcome, setWelcome] = useState(() => !localStorage.getItem('welcomed'));
   const [error, setError] = useState<string | null>(null);
   const [license, setLicense] = useState<LicenseStatus | null>(null);
 
@@ -62,8 +63,25 @@ export default function App() {
   }, []);
 
   if (error) return <div className="splash error">Could not open the local database: {error}</div>;
-  if (!template || !license) return <div className="splash">Loading IDCraft Studio…</div>;
+  if (!template || !license)
+    return (
+      <div className="splash">
+        <img className="splash-logo" src="./icon.png" alt="" />
+        <div>Loading IDCraft Studio…</div>
+      </div>
+    );
   if (license.state === 'expired' || license.state === 'clock') return <ActivationScreen status={license} onDone={setLicense} />;
+  if (welcome && (license.state !== 'dev' || location.search.includes('wizard')))
+    return (
+      <WelcomeWizard
+        status={license}
+        onDone={(s) => {
+          localStorage.setItem('welcomed', '1');
+          setLicense(s);
+          setWelcome(false);
+        }}
+      />
+    );
 
   return (
     <div className="app">

@@ -12,7 +12,8 @@ import {
   type Analysis,
   type PhotoEdit,
 } from '../lib/photoAI';
-import { ColorInput, Modal, toast } from './ui';
+import { ColorInput, Modal, NumberInput, toast } from './ui';
+import { canvasToBlob, revealFile, saveFile } from '../lib/files';
 
 const PREVIEW_H = 520;
 
@@ -40,6 +41,20 @@ export function PhotoEditor({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drag = useRef<{ x: number; y: number } | null>(null);
   const base = useRef(1);
+  const [custom, setCustom] = useState(false);
+  const [size, setSize] = useState({ w: 30, h: 40 });
+  const round1 = (n: number) => Math.round(n * 10) / 10;
+  const presetIndex = edit ? ASPECTS.findIndex((a) => Math.abs(a.value - edit.aspect) < 0.001 && a.w === size.w) : -1;
+  const preset = custom ? -1 : presetIndex >= 0 ? presetIndex : edit ? ASPECTS.findIndex((a) => Math.abs(a.value - edit.aspect) < 0.001) : 0;
+
+  const savePhotoFile = async () => {
+    if (!src || !edit) return;
+    const outH = Math.round((size.h / 25.4) * 300);
+    const canvas = renderPhoto(src, analysis, { ...edit, aspect: size.w / size.h }, outH);
+    const file = await saveFile('Photos', `Photo ${round1(size.w)}x${round1(size.h)}mm ${Date.now()}.jpg`, await canvasToBlob(canvas, 'jpg', 300));
+    if (file) await revealFile(file);
+    toast('Photo saved.');
+  };
 
   // Load the source image.
   useEffect(() => {
@@ -250,13 +265,38 @@ export function PhotoEditor({
 
           <section>
             <h3>Crop</h3>
-            <select value={edit.aspect} onChange={(e) => set({ aspect: Number(e.target.value) })}>
-              {ASPECTS.map((a) => (
-                <option key={a.label} value={a.value}>
+            <select
+              value={preset >= 0 ? preset : 'custom'}
+              onChange={(e) => {
+                if (e.target.value === 'custom') return setCustom(true);
+                setCustom(false);
+                const a = ASPECTS[Number(e.target.value)];
+                setSize({ w: a.w, h: a.h });
+                set({ aspect: a.value });
+              }}
+            >
+              {ASPECTS.map((a, i) => (
+                <option key={a.label} value={i}>
                   {a.label}
                 </option>
               ))}
+              <option value="custom">Custom size…</option>
             </select>
+            {preset < 0 && (
+              <div className="grid2">
+                <label className="field">
+                  <span>Width (mm)</span>
+                  <NumberInput value={size.w} min={5} step={1} onChange={(w) => (setSize({ ...size, w }), set({ aspect: w / size.h }))} />
+                </label>
+                <label className="field">
+                  <span>Height (mm)</span>
+                  <NumberInput value={size.h} min={5} step={1} onChange={(h) => (setSize({ ...size, h }), set({ aspect: size.w / h }))} />
+                </label>
+              </div>
+            )}
+            <button className="btn" onClick={savePhotoFile} title="Save this photo as a JPG at 300 dpi in its real size">
+              💾 Save {round1(size.w)} × {round1(size.h)} mm photo (300 dpi)
+            </button>
             <label className="slider">
               <span>
                 Zoom<b>{zoom.toFixed(2)}×</b>

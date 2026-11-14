@@ -33,16 +33,16 @@ const CONCEPTS: { kind: ColumnKind; label: string; words: string[] }[] = [
   { kind: 'department', label: 'Department', words: ['department', 'dept', 'division', 'विभाग'] },
   { kind: 'course', label: 'Course', words: ['course', 'program', 'programme', 'branch', 'stream', 'अभ्यासक्रम', 'शाखा'] },
   { kind: 'year', label: 'Year', words: ['year', 'academicyear', 'batch', 'वर्ष'] },
-  { kind: 'dob', label: 'Date of birth', words: ['dob', 'dateofbirth', 'birthdate', 'bdate', 'जन्मतारीख', 'जन्मदिनांक'] },
-  { kind: 'blood', label: 'Blood group', words: ['bloodgroup', 'blood', 'bg', 'bldgrp', 'रक्तगट'] },
+  { kind: 'dob', label: 'Date of birth', words: ['dob', 'bod', 'dateofbirth', 'birthdate', 'bdate', 'birthday', 'जन्मतारीख', 'जन्मदिनांक'] },
+  { kind: 'blood', label: 'Blood group', words: ['bloodgroup', 'blood', 'bg', 'bldgrp', 'bgroup', 'रक्तगट'] },
   { kind: 'emergency', label: 'Emergency contact', words: ['emergency', 'emergencycontact', 'emergencyno', 'emergencyphone', 'आपत्कालीनसंपर्क'] },
   {
     kind: 'phone',
     label: 'Phone',
-    words: ['phone', 'mobile', 'mobileno', 'phoneno', 'contact', 'contactno', 'cell', 'mob', 'whatsapp', 'parentmobile', 'parentphone', 'मोबाईल', 'मोबाइल', 'फोन', 'संपर्क', 'भ्रमणध्वनी'],
+    words: ['phone', 'mobile', 'mobileno', 'mono', 'mobno', 'mobnumber', 'mobilenumber', 'phoneno', 'contact', 'contactno', 'cell', 'mob', 'whatsapp', 'parentmobile', 'parentphone', 'मोबाईल', 'मोबाइल', 'फोन', 'संपर्क', 'भ्रमणध्वनी'],
   },
   { kind: 'email', label: 'Email', words: ['email', 'emailid', 'mail', 'ईमेल'] },
-  { kind: 'address', label: 'Address', words: ['address', 'residentialaddress', 'addr', 'पत्ता', 'राहण्याचापत्ता'] },
+  { kind: 'address', label: 'Address', words: ['address', 'add', 'adress', 'addres', 'addrs', 'addr', 'residentialaddress', 'resaddress', 'residence', 'permanentaddress', 'पत्ता', 'राहण्याचापत्ता'] },
   { kind: 'city', label: 'City', words: ['city', 'town', 'village', 'शहर', 'गाव'] },
   { kind: 'gender', label: 'Gender', words: ['gender', 'sex', 'लिंग'] },
   { kind: 'aadhaar', label: 'Aadhaar', words: ['aadhaar', 'aadhar', 'aadhaarno', 'aadharno', 'uidai', 'आधार', 'आधारक्रमांक'] },
@@ -50,7 +50,7 @@ const CONCEPTS: { kind: ColumnKind; label: string; words: string[] }[] = [
   { kind: 'role', label: 'Role', words: ['role', 'category', 'type', 'passtype', 'भूमिका'] },
   { kind: 'validTill', label: 'Valid till', words: ['validtill', 'validupto', 'validity', 'expiry', 'expirydate', 'वैधता'] },
   { kind: 'issueDate', label: 'Issue date', words: ['issuedate', 'dateofissue', 'issued', 'joiningdate', 'doj', 'dateofjoining'] },
-  { kind: 'photo', label: 'Photo file', words: ['photo', 'image', 'picture', 'pic', 'photofile', 'photoname', 'imagename', 'फोटो', 'छायाचित्र'] },
+  { kind: 'photo', label: 'Photo file', words: ['photo', 'photono', 'photonumber', 'image', 'imageno', 'picture', 'pic', 'photofile', 'photoname', 'imagename', 'फोटो', 'फोटोक्रमांक', 'छायाचित्र'] },
 ];
 
 export const KIND_LABEL: Record<ColumnKind, string> = {
@@ -64,6 +64,9 @@ export const KIND_LABEL: Record<ColumnKind, string> = {
 
 const norm = (s: string) => s.toLowerCase().normalize('NFC').replace(/[^a-z0-9ऀ-ॿ]/g, '');
 
+/** Short synonyms that only count as the whole header ("Add" yes, "Additional" no). */
+const EXACT_ONLY = new Set(['add', 'bod', 'mono', 'pic', 'mob']);
+
 /** Best concept for a header text (exact synonym, else contains a synonym). */
 export function conceptFromName(header: string): { kind: ColumnKind; score: number } | null {
   const n = norm(header);
@@ -72,7 +75,7 @@ export function conceptFromName(header: string): { kind: ColumnKind; score: numb
   let best: { kind: ColumnKind; score: number } | null = null;
   for (const c of CONCEPTS) {
     for (const w of c.words) {
-      if (w.length < 3) continue;
+      if (w.length < 3 || EXACT_ONLY.has(w)) continue;
       if (n.includes(w) || (w.includes(n) && n.length >= 4)) {
         const score = 0.6 + 0.3 * (Math.min(w.length, n.length) / Math.max(w.length, n.length));
         if (!best || score > best.score) best = { kind: c.kind, score };

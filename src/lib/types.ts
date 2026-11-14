@@ -1,4 +1,10 @@
-export type ElementType = 'text' | 'image' | 'photo' | 'rect' | 'ellipse' | 'line' | 'qr' | 'barcode';
+export type ElementType = 'text' | 'image' | 'photo' | 'rect' | 'ellipse' | 'line' | 'qr' | 'barcode' | 'shape';
+/** Outline used for shapes and for masking photos/images. */
+export type ShapeKind =
+  | 'rect' | 'rounded' | 'circle' | 'triangle' | 'diamond' | 'pentagon' | 'hexagon' | 'octagon' | 'star' | 'star6'
+  | 'heart' | 'shield' | 'arch' | 'badge' | 'ribbon' | 'arrow' | 'chevron' | 'speech' | 'wave' | 'cloud';
+/** How Devanagari text is stored for the chosen font: Unicode, or a legacy 8-bit font layout. */
+export type TextEncoding = 'unicode' | 'krutidev';
 export type SideKey = 'front' | 'back';
 export type Fit = 'cover' | 'contain' | 'stretch';
 export type BarcodeFormat = 'CODE128' | 'CODE39' | 'EAN13' | 'ITF14';
@@ -36,6 +42,8 @@ export interface TextElement extends BaseElement {
   uppercase: boolean;
   /** Shrink the font so a single line always fits the box (good for long names). */
   autoShrink: boolean;
+  /** Legacy (non-Unicode) Marathi fonts such as Kruti Dev need the text converted. */
+  encoding?: TextEncoding;
 }
 
 export interface ImageElement extends BaseElement {
@@ -43,6 +51,11 @@ export interface ImageElement extends BaseElement {
   src: string;
   fit: Fit;
   radius: number;
+  /** Mask outline ('rect' = none, uses radius). */
+  mask?: ShapeKind;
+  /** Built-in clipart id; drawn in `tint` instead of `src`. */
+  clipart?: string;
+  tint?: string;
 }
 
 export interface PhotoElement extends BaseElement {
@@ -51,6 +64,14 @@ export interface PhotoElement extends BaseElement {
   radius: number;
   borderColor: string;
   borderWidth: number;
+  mask?: ShapeKind;
+  /** true/undefined = photo always fills the frame automatically; false = manual position below. */
+  fitLock?: boolean;
+  /** Manual photo position inside the frame (when unlocked). */
+  photoZoom?: number;
+  photoX?: number;
+  photoY?: number;
+  photoRotation?: number;
 }
 
 export interface RectElement extends BaseElement {
@@ -63,6 +84,14 @@ export interface RectElement extends BaseElement {
 
 export interface EllipseElement extends BaseElement {
   type: 'ellipse';
+  fill: string;
+  stroke: string;
+  strokeWidth: number;
+}
+
+export interface ShapeElement extends BaseElement {
+  type: 'shape';
+  shape: ShapeKind;
   fill: string;
   stroke: string;
   strokeWidth: number;
@@ -98,7 +127,8 @@ export type CardElement =
   | EllipseElement
   | LineElement
   | QrElement
-  | BarcodeElement;
+  | BarcodeElement
+  | ShapeElement;
 
 export interface CardSide {
   background: string;

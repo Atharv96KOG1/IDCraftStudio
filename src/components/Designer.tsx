@@ -5,6 +5,17 @@ import type { ElementType } from '../lib/types';
 import { db } from '../lib/db';
 import { pickFiles, resizeImage } from '../lib/utils';
 import { CardCanvas } from './CardCanvas';
+import { CLIPARTS, SHAPES, clipartSrc } from '../lib/shapes';
+import { conceptFromName } from '../lib/fieldDetect';
+
+const EMOJIS = ['👤', '📞', '📱', '✉️', '🏠', '📍', '🎂', '🩸', '🆔', '🏫', '🎓', '📚', '📅', '🌐', '💼', '🏢', '👪', '🔢', '⭐', '✅', '🏆', '🚌', '🏥', '⚽', '🎨', '🎵', '❤️', '🔒', '🕒', '🇮🇳'];
+/** Emoji shown before a field when “with icons” is on. */
+const FIELD_EMOJI: Record<string, string> = {
+  name: '👤', firstName: '👤', lastName: '👤', phone: '📞', emergency: '🚨', email: '✉️', address: '🏠', city: '📍', dob: '🎂',
+  blood: '🩸', class: '🏫', division: '🏫', roll: '🔢', studentId: '🆔', employeeId: '🆔', id: '🆔', father: '👨', mother: '👩',
+  parent: '👪', designation: '💼', department: '🏢', company: '🏢', course: '🎓', year: '📅', validTill: '📅', issueDate: '📅', gender: '⚧️', aadhaar: '🆔',
+};
+import { useState } from 'react';
 import { Properties } from './Properties';
 
 const TOOLS: { type: ElementType; icon: string; label: string }[] = [
@@ -27,6 +38,7 @@ export function Designer() {
     <div className="designer">
       <aside className="panel left">
         <Tools />
+        <Library />
         <Layers />
       </aside>
       <main className="stage-area">
@@ -71,6 +83,79 @@ function Tools() {
           </button>
         ))}
       </div>
+    </section>
+  );
+}
+
+/** Shapes, clipart and one-click data fields. */
+function Library() {
+  const [tab, setTab] = useState<'fields' | 'shapes' | 'clipart' | 'emoji'>('fields');
+  const [icons, setIcons] = useState(true);
+  const addElement = useStore((s) => s.addElement);
+  const tpl = useStore((s) => s.template)!;
+  const label = (f: string) => f.replace(/([a-z])([A-Z])/g, '$1 $2');
+  return (
+    <section>
+      <div className="seg small">
+        {(['fields', 'shapes', 'clipart', 'emoji'] as const).map((t) => (
+          <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>
+            {t === 'fields' ? 'Fields' : t === 'shapes' ? 'Shapes' : t === 'clipart' ? 'Icons' : '😀'}
+          </button>
+        ))}
+      </div>
+      {tab === 'fields' && (
+        <div className="field-list">
+          <p className="hint">Click to add “Label : value” to the card.</p>
+          <label className="check-line">
+            <input type="checkbox" checked={icons} onChange={(e) => setIcons(e.target.checked)} /> with icons 📞 ✉️ 🏠
+          </label>
+          {tpl.fields.map((f) => {
+            const em = FIELD_EMOJI[conceptFromName(label(f))?.kind ?? ''] ?? '▪️';
+            return (
+              <button
+                key={f}
+                onClick={() =>
+                  addElement('text', { text: `${icons ? `${em} ` : ''}${label(f)} : {{${f}}}`, name: f, w: Math.min(50, tpl.widthMm - 4), h: 5 })
+                }
+              >
+                {icons ? `${em} ` : ''}
+                {label(f)}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {tab === 'shapes' && (
+        <div className="shape-grid">
+          {SHAPES.map((s) => (
+            <button key={s.kind} title={s.label} onClick={() => addElement('shape', { shape: s.kind, name: s.label })}>
+              {s.icon}
+            </button>
+          ))}
+        </div>
+      )}
+      {tab === 'emoji' && (
+        <div className="clip-grid">
+          {EMOJIS.map((e) => (
+            <button key={e} title="Add emoji" onClick={() => addElement('text', { text: e, name: `Emoji ${e}`, w: 7, h: 7, fontSize: 14, align: 'center' })}>
+              {e}
+            </button>
+          ))}
+        </div>
+      )}
+      {tab === 'clipart' && (
+        <div className="clip-grid">
+          {CLIPARTS.map((c) => (
+            <button
+              key={c.id}
+              title={c.label}
+              onClick={() => addElement('image', { clipart: c.id, tint: '#1f2937', src: '', w: 6, h: 6, fit: 'contain', name: c.label })}
+            >
+              <img src={clipartSrc(c.id, '#374151')} alt={c.label} />
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

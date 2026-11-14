@@ -335,3 +335,62 @@ kbd { background: #f3f4f6; border: 1px solid var(--border); border-bottom-width:
 .kind.medium { background: #fef9c3; color: #854d0e; }
 .kind.low { background: #f3f4f6; color: #374151; }
 .auto-tag { font-size: 10px; color: var(--accent); background: var(--accent-soft); border-radius: 4px; padding: 1px 5px; }
+
+/* ---------- print dialog v2 ---------- */
+.print-cols { display: grid; grid-template-columns: 1fr 230px; gap: 16px; align-items: start; }
+.print-cols .print-summary { flex-direction: column; align-items: center; margin-top: 8px; text-align: center; }
+.sheet div.turned { background: #fde68a; border-color: #d97706; }
+.export-cards { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px; }
+.export-cards h3 { margin: 0 0 6px; font-size: 13px; }
+.grid4 { display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: 8px; align-items: end; }
+
+/* ---------- shapes / clipart / fields palettes ---------- */
+.shape-grid, .clip-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.shape-grid button, .clip-grid button { height: 34px; border: 1px solid var(--border); background: #fff; border-radius: 6px; cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; padding: 0; }
+.shape-grid button:hover, .clip-grid button:hover, .shape-grid button.on { border-color: var(--accent); background: var(--accent-soft); }
+.clip-grid img { width: 20px; height: 20px; }
+.field-list { display: flex; flex-direction: column; gap: 3px; }
+.field-list button { text-align: left; border: 1px solid var(--border); background: #fff; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px; }
+.field-list button:hover { border-color: var(--accent); background: var(--accent-soft); }
+.field-row { display: flex; gap: 4px; align-items: center; }
+.field-row input { flex: 1; min-width: 0; }
+.field-row button { border: 1px solid var(--border); background: #fff; border-radius: 5px; cursor: pointer; padding: 2px 6px; }
+.warn-box { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; border-radius: 6px; padding: 6px 8px; font-size: 12px; margin: 6px 0; }
+.ok-box { background: #dcfce7; border: 1px solid #22c55e; color: #166534; border-radius: 6px; padding: 6px 8px; font-size: 12px; margin: 6px 0; }
+.seg.small { display: flex; margin-bottom: 6px; }
+.seg.small button { flex: 1; padding: 4px 6px; font-size: 12px; }
+.seg button.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+/* ---------- splash + first-run wizard ---------- */
+.splash { flex-direction: column; gap: 14px; }
+.splash-logo { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; font-weight: 800; font-size: 24px; display: grid; place-items: center; animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { transform: scale(1.08); box-shadow: 0 0 0 12px #6366f122; } }
+.wiz { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 20% 10%, #4f46e5, #1e1b4b 55%, #0f172a); overflow: hidden; }
+.wiz-bg span { position: absolute; bottom: -80px; width: 46px; height: 30px; border-radius: 6px; background: #ffffff14; border: 1px solid #ffffff22; animation: floatUp linear infinite; }
+@keyframes floatUp { to { transform: translateY(-115vh) rotate(200deg); } }
+.wiz-card { position: relative; width: min(620px, 92vw); background: #ffffffee; backdrop-filter: blur(12px); border-radius: 20px; padding: 28px 34px; box-shadow: 0 30px 80px #0007; text-align: center; animation: cardIn 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+@keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(0.96); } }
+.wiz-card h1 { margin: 10px 0 4px; font-size: 26px; background: linear-gradient(90deg, #4f46e5, #9333ea); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wiz-sub { color: #4b5563; margin: 0 0 16px; }
+.wiz-steps { display: flex; justify-content: center; gap: 18px; font-size: 12px; color: #9ca3af; margin-bottom: 8px; }
+.wiz-steps b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: #e5e7eb; color: #6b7280; margin-right: 4px; transition: 0.3s; }
+.wiz-steps .on { color: #4f46e5; font-weight: 600; }
+.wiz-steps .on b { background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; }
+.wiz-logo { width: 76px; height: 76px; margin: 6px auto 0; border-radius: 20px; background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; font-size: 30px; font-weight: 800; display: grid; place-items: center; animation: logoIn 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.4); box-shadow: 0 12px 30px #6366f155; }
+@keyframes logoIn { from { transform: rotate(-25deg) scale(0.3); opacity: 0; } }
+.wiz-features { display: grid; gap: 8px; text-align: left; margin: 8px 0 18px; }
+.wiz-feature { display: flex; gap: 12px; align-items: center; padding: 8px 12px; border-radius: 12px; background: #f5f3ff; opacity: 0; animation: slideIn 0.45s ease-out forwards; }
+.wiz-feature > span { font-size: 22px; width: 32px; text-align: center; }
+.wiz-feature small { display: block; color: #6b7280; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: none; } }
+.wiz-next { padding: 10px 26px; font-size: 15px; border-radius: 10px; background: linear-gradient(135deg, #6366f1, #9333ea); border: 0; transition: transform 0.15s; }
+.wiz-next:hover { transform: translateY(-2px); }
+.wiz-or { margin: 16px 0 6px; color: #9ca3af; font-size: 12px; }
+.wiz-card .lic-form { text-align: left; }
+.wiz-check { width: 80px; height: 80px; margin: 6px auto; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; font-size: 42px; display: grid; place-items: center; animation: logoIn 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.5); box-shadow: 0 12px 30px #22c55e55; }
+.check-line { display: flex; gap: 6px; align-items: center; font-size: 12px; margin: 2px 0 4px; }
+.photo-adjust { background: #f9fafb; border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; margin: 6px 0; }
+.logo-img { width: 30px; height: 30px; border-radius: 8px; display: block; }
+.brand.big .logo-img { width: 44px; height: 44px; border-radius: 11px; }
+img.splash-logo, img.wiz-logo { background: none; object-fit: contain; }
+img.wiz-logo { width: 92px; height: 92px; border-radius: 22px; }

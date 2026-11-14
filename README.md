@@ -1,6 +1,6 @@
 # IDCraft Studio
 
-Windows desktop app for designing, filling and printing ID cards. Built with Electron, React and Konva. All data is stored locally on the PC (IndexedDB); nothing is uploaded anywhere.
+Windows and Mac desktop app for designing, filling and printing ID cards. Built with Electron, React and Konva. All data is stored locally on the PC (IndexedDB); nothing is uploaded anywhere.
 
 ## Features
 
@@ -13,6 +13,16 @@ Windows desktop app for designing, filling and printing ID cards. Built with Ele
 - **Printing** – A4 or Letter sheets with as many cards as fit (portrait or landscape picked automatically), margins, gaps, cut marks, duplex (back sheets mirrored), or one-card-per-page for card printers. Save as PDF or print directly. 200/300/600 dpi.
 - **Templates** – 3 starter designs plus blank, duplicate, import/export (`.idct`), PNG export.
 - **Backup / restore** of all templates and records (`.idcb`).
+- **Shapes, masks, icons and emoji** – stars, hexagons, waves, shields, ribbons…; photos can sit in a circle, hexagon, heart, shield or arch frame; 30 built-in icons (phone, email, address, blood group…) in any colour; emoji for field labels.
+- **Photo lock** – locked photos always fill their frame; unlock to move, zoom and rotate the photo inside it.
+- **Modern templates** – 6 new modern designs, including a Marathi one.
+- **Data fields** – rename (card, QR codes and records update too), reorder, one-click “📞 Phone : {{Phone}}” labels.
+- **Next year** – Template › Copy for next year changes 2025-26 → 2026-27, copies records and moves everyone up a class. ✎ Bulk edit changes any field for many records (set, find/replace, +1, English → Marathi).
+- **Kruti Dev** – Unicode Marathi text is converted automatically for legacy Kruti Dev fonts.
+- **Photo sizes** – crop to 35 × 45 mm, 50 × 50 mm, 4 × 6 in, 6 × 4 in or any custom size and save it as a 300 dpi photo.
+- **Excel photos** – a column with camera file names (DSC0001.JPG, 001.jpg) puts the photos on the cards straight after import.
+- **Sheet layout** – A4, A3, A5, Letter, Legal, 4 × 6 or custom paper; upright and turned cards are mixed to fit the most (11 CR80 cards on A4); back-sheet flip and mirror printing; exact card size.
+- **Exports** – PDF, JPG sheets, HTML page, and every card as its own PNG/JPG at 300, 600, 1200 or 2400 dpi. Files are saved in Documents › IDCraft Studio and the folder opens when done.
 
 ## AI features (all offline)
 
@@ -23,7 +33,7 @@ Windows desktop app for designing, filling and printing ID cards. Built with Ele
 
 ## Licensing
 
-The app has a 15-day trial, then needs a licence key. Keys are signed with your Ed25519 **private key**, which stays on your computer at `~/.idcraft-license/private.pem` and is never in this repo. **Back that folder up** – without it you cannot issue keys that work with existing installs.
+The app has a 15-day trial, then needs a licence key. The trial start date is also stored in places an uninstall does not remove, so reinstalling does not restart the trial (a full Windows reinstall or a new PC does). Keys are signed with your Ed25519 **private key**, which stays on your computer at `~/.idcraft-license/private.pem` and is never in this repo. **Back that folder up** – without it you cannot issue keys that work with existing installs.
 
 ```bash
 npm run keygen -- issue --name "Sunrise School" --machine K7QM-X2PA-9RTD-H4WB --days 365

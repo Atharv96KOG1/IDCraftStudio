@@ -17,6 +17,15 @@ interface Bridge {
   };
   copyText: (t: string) => Promise<void>;
   version: () => Promise<string>;
+  files?: {
+    save: (sub: string, name: string, data: Uint8Array) => Promise<string>;
+    openFolder: (sub: string) => Promise<string>;
+    reveal: (file: string) => Promise<void>;
+    baseDir: () => Promise<string>;
+    chooseBaseDir: () => Promise<string | null>;
+    list: (sub: string, ext?: string) => Promise<{ name: string; path: string; modified: number }[]>;
+    read: (file: string) => Promise<string>;
+  };
 }
 
 export const bridge = (window as unknown as { idcraft?: Bridge }).idcraft ?? null;

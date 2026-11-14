@@ -192,6 +192,71 @@ function unseal(text) {
   }
 }
 
+// Extra copies of the trial start date in places an uninstall does not remove,
+// so deleting the app (or its data folder) and reinstalling does not restart the trial.
+const REG_SHADOW = 'HKCU\\Software\\Classes\\IDCraftStudio.Template\\Shell';
+function regShadowRead() {
+  if (process.platform !== 'win32') return null;
+  try {
+    const out = execFileSync(REG, ['query', REG_SHADOW, '/v', 'State'], { encoding: 'utf8', windowsHide: true });
+    return out.match(/State\s+REG_SZ\s+(\S+)/)?.[1] ?? null;
+  } catch {
+    return null;
+  }
+}
+function regShadowWrite(value) {
+  if (process.platform !== 'win32') return;
+  try {
+    execFileSync(REG, ['add', REG_SHADOW, '/v', 'State', '/t', 'REG_SZ', '/d', value, '/f'], { windowsHide: true });
+  } catch {
+    /* ignore */
+  }
+}
+function shadowFiles() {
+  const home = os.homedir();
+  if (process.platform === 'win32') {
+    const local = process.env.LOCALAPPDATA || path.join(home, 'AppData', 'Local');
+    const shared = process.env.ProgramData || 'C:\\ProgramData';
+    return [path.join(local, 'ICSRuntime', 'cache.bin'), path.join(shared, 'ICSRuntime', 'cache.bin')];
+  }
+  if (process.platform === 'darwin') {
+    return [path.join(home, 'Library', 'Preferences', '.com.idcraft.runtime'), path.join(home, 'Library', 'Caches', '.ics-runtime.bin')];
+  }
+  return [path.join(home, '.config', '.ics-runtime.bin')];
+}
+/** Reads every shadow copy. Returns the earliest start date, or 'tampered' if any copy was edited. */
+function readShadows() {
+  const values = [regShadowRead()];
+  for (const f of shadowFiles()) {
+    try {
+      values.push(fs.readFileSync(f, 'utf8'));
+    } catch {
+      values.push(null);
+    }
+  }
+  let first = null;
+  let tampered = false;
+  for (const v of values) {
+    if (!v) continue;
+    const st = unseal(v);
+    if (st.tampered || !Number.isFinite(st.first)) tampered = true;
+    else first = first === null ? st.first : Math.min(first, st.first);
+  }
+  return { first, tampered };
+}
+function writeShadows(first) {
+  const value = seal({ first });
+  regShadowWrite(value);
+  for (const f of shadowFiles()) {
+    try {
+      fs.mkdirSync(path.dirname(f), { recursive: true });
+      fs.writeFileSync(f, value);
+    } catch {
+      /* ignore: some folders may not be writable */
+    }
+  }
+}
+
 class LicenseManager {
   constructor(userDataDir) {
     this.dir = userDataDir;
@@ -203,9 +268,10 @@ class LicenseManager {
     let state = null;
     if (fs.existsSync(this.stateFile)) state = unseal(fs.readFileSync(this.stateFile, 'utf8'));
     const regFirst = Number(regRead('Installed')) || null;
-    if (state?.tampered) return { tampered: true };
-    if (!state) state = { first: regFirst ?? Date.now(), last: Date.now() };
-    if (regFirst && regFirst < state.first) state.first = regFirst;
+    const shadow = readShadows();
+    if (state?.tampered || shadow.tampered) return { tampered: true };
+    if (!state) state = { first: Date.now(), last: Date.now() };
+    for (const f of [regFirst, shadow.first]) if (f && f < state.first) state.first = f;
     return state;
   }
 
@@ -220,6 +286,8 @@ class LicenseManager {
       /* ignore */
     }
     if (!regRead('Installed')) regWrite('Installed', state.first);
+    const shadow = readShadows();
+    if (shadow.first !== state.first) writeShadows(Math.min(state.first, shadow.first ?? state.first));
   }
 
   /** A valid licence key on this PC wins over everything else. */

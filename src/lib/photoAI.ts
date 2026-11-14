@@ -77,11 +77,14 @@ export interface PhotoEdit {
   smoothing: number;
 }
 
+/** Crop sizes (mm) – the aspect ratio drives the crop, the size is used when saving a photo file. */
 export const ASPECTS = [
-  { label: 'ID photo 3:4', value: 3 / 4 },
-  { label: 'Passport 35×45 mm', value: 35 / 45 },
-  { label: 'Square 1:1', value: 1 },
-  { label: 'Portrait 4:5', value: 4 / 5 },
+  { label: 'ID photo 30 × 40 mm (3:4)', value: 3 / 4, w: 30, h: 40 },
+  { label: 'Passport 35 × 45 mm', value: 35 / 45, w: 35, h: 45 },
+  { label: 'Square 50 × 50 mm', value: 1, w: 50, h: 50 },
+  { label: '4 × 6 in (portrait)', value: 4 / 6, w: 101.6, h: 152.4 },
+  { label: '6 × 4 in (landscape)', value: 6 / 4, w: 152.4, h: 101.6 },
+  { label: 'Portrait 40 × 50 mm (4:5)', value: 4 / 5, w: 40, h: 50 },
 ];
 
 export const BACKGROUNDS = [

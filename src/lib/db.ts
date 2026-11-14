@@ -1,6 +1,6 @@
 import Dexie, { type Table } from 'dexie';
 import type { Person, Template } from './types';
-import { SEED_TEMPLATES } from './templates';
+import { MODERN_TEMPLATES, SEED_TEMPLATES } from './templates';
 
 interface Meta {
   key: string;
@@ -48,9 +48,15 @@ let seeding: Promise<void> | null = null;
 /** Adds the starter templates on first run. Safe to call more than once. */
 export function seedIfEmpty(): Promise<void> {
   seeding ??= db.transaction('rw', db.templates, db.meta, async () => {
-    if (await db.meta.get('seeded')) return;
-    if ((await db.templates.count()) === 0) await db.templates.bulkPut(SEED_TEMPLATES());
-    await db.meta.put({ key: 'seeded', value: true });
+    if (!(await db.meta.get('seeded'))) {
+      if ((await db.templates.count()) === 0) await db.templates.bulkPut(SEED_TEMPLATES());
+      await db.meta.put({ key: 'seeded', value: true });
+    }
+    // v1.2: modern designs, added once (also for existing installs).
+    if (!(await db.meta.get('seededModern'))) {
+      await db.templates.bulkPut(MODERN_TEMPLATES());
+      await db.meta.put({ key: 'seededModern', value: true });
+    }
   });
   return seeding;
 }

@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { selectedElement, useStore } from '../lib/store';
-import type { BarcodeFormat, CardElement, Fit, Template } from '../lib/types';
+import type { BarcodeFormat, CardElement, Fit, ShapeKind, Template, TextEncoding } from '../lib/types';
+import { MASKS, SHAPES } from '../lib/shapes';
+import { isKrutiFont } from '../lib/marathi';
+import { qrModuleMm, resolveText } from '../lib/render';
+import { db } from '../lib/db';
 import { SYSTEM_FIELDS } from '../lib/types';
 import { CARD_PRESETS } from '../lib/elements';
 import { FontPicker } from './FontPicker';
@@ -176,6 +180,15 @@ function TypeProps({ el, set }: { el: CardElement; set: (p: Partial<CardElement>
             ))}
           </div>
           <Toggle label="Shrink to fit (single line)" checked={el.autoShrink} onChange={(autoShrink) => set({ autoShrink })} />
+          <Field label="Marathi font type">
+            <select
+              value={el.encoding ?? (isKrutiFont(el.fontFamily) ? 'krutidev' : 'unicode')}
+              onChange={(e) => set({ encoding: e.target.value as TextEncoding })}
+            >
+              <option value="unicode">Unicode font (Noto, Mukta, Nirmala, Shivaji Unicode…)</option>
+              <option value="krutidev">Kruti Dev (legacy) – convert Unicode text automatically</option>
+            </select>
+          </Field>
           {/[\u0900-\u097F]/.test(el.text) && el.letterSpacing !== 0 && (
             <p className="hint">Tip: keep letter spacing at 0 for Marathi so letters join correctly.</p>
           )}
@@ -186,19 +199,26 @@ function TypeProps({ el, set }: { el: CardElement; set: (p: Partial<CardElement>
       return (
         <section>
           <h3>Image</h3>
-          {el.src && <img className="thumb-preview" src={el.src} alt="" />}
+          {el.src && !el.clipart && <img className="thumb-preview" src={el.src} alt="" />}
+          {el.clipart && (
+            <Field label="Clipart colour">
+              <ColorInput value={el.tint ?? '#111827'} onChange={(tint) => set({ tint })} />
+            </Field>
+          )}
           <div className="btn-row">
             <button
               className="btn"
               onClick={async () => {
                 const [f] = await pickFiles('image/*');
-                if (f) set({ src: await resizeImage(f, 1600) });
+                // PNG logos keep their transparency.
+                if (f) set({ src: await resizeImage(f, 2000), clipart: undefined });
               }}
             >
-              {el.src ? 'Replace image…' : 'Choose image…'}
+              {el.src || el.clipart ? 'Replace image…' : 'Choose image / PNG logo…'}
             </button>
           </div>
           <FitSelect value={el.fit} onChange={(fit) => set({ fit })} />
+          <MaskSelect value={el.mask} onChange={(mask) => set({ mask })} />
           <Field label="Corner radius (mm)">
             <NumberInput value={el.radius} min={0} onChange={(radius) => set({ radius })} />
           </Field>
@@ -209,8 +229,37 @@ function TypeProps({ el, set }: { el: CardElement; set: (p: Partial<CardElement>
       return (
         <section>
           <h3>Photo</h3>
-          <p className="hint">Shows each record's photo. Set a corner radius of half the width for a round photo.</p>
+          <p className="hint">Shows each record's photo inside the chosen frame shape.</p>
           <FitSelect value={el.fit} onChange={(fit) => set({ fit })} />
+          <MaskSelect value={el.mask} onChange={(mask) => set({ mask })} />
+          <Toggle
+            label={el.fitLock === false ? '🔓 Unlocked – move / zoom / rotate photo' : '🔒 Locked – photo fits the frame automatically'}
+            checked={el.fitLock !== false}
+            onChange={(v) => set({ fitLock: v })}
+          />
+          {el.fitLock === false && (
+            <div className="photo-adjust">
+              {(
+                [
+                  ['photoZoom', 'Zoom', 0.3, 4, 0.01, 1],
+                  ['photoX', 'Move left / right', -100, 100, 1, 0],
+                  ['photoY', 'Move up / down', -100, 100, 1, 0],
+                  ['photoRotation', 'Rotate °', -180, 180, 1, 0],
+                ] as const
+              ).map(([k, label, min, max, step, def]) => (
+                <label key={k} className="slider">
+                  <span>
+                    {label}
+                    <b>{Math.round(((el[k] ?? def) as number) * 100) / 100}</b>
+                  </span>
+                  <input type="range" min={min} max={max} step={step} value={(el[k] ?? def) as number} onChange={(e) => set({ [k]: Number(e.target.value) }, k)} />
+                </label>
+              ))}
+              <button className="btn" onClick={() => set({ photoZoom: 1, photoX: 0, photoY: 0, photoRotation: 0 })}>
+                Reset position
+              </button>
+            </div>
+          )}
           <div className="grid2">
             <Field label="Corner radius">
               <NumberInput value={el.radius} min={0} onChange={(radius) => set({ radius })} />
@@ -249,6 +298,31 @@ function TypeProps({ el, set }: { el: CardElement; set: (p: Partial<CardElement>
         </section>
       );
 
+    case 'shape':
+      return (
+        <section>
+          <h3>Shape</h3>
+          <div className="shape-grid">
+            {SHAPES.map((x) => (
+              <button key={x.kind} title={x.label} className={el.shape === x.kind ? 'on' : ''} onClick={() => set({ shape: x.kind })}>
+                {x.icon}
+              </button>
+            ))}
+          </div>
+          <div className="grid2">
+            <Field label="Fill" wide>
+              <ColorInput value={el.fill} allowNone onChange={(fill) => set({ fill })} />
+            </Field>
+            <Field label="Border" wide>
+              <ColorInput value={el.stroke} onChange={(stroke) => set({ stroke })} />
+            </Field>
+            <Field label="Border (mm)">
+              <NumberInput value={el.strokeWidth} min={0} step={0.1} onChange={(strokeWidth) => set({ strokeWidth })} />
+            </Field>
+          </div>
+        </section>
+      );
+
     case 'line':
       return (
         <section>
@@ -282,6 +356,7 @@ function TypeProps({ el, set }: { el: CardElement; set: (p: Partial<CardElement>
           </div>
           <textarea rows={2} value={el.value} onChange={(e) => set({ value: e.target.value }, 'value')} />
           <FieldInsert onInsert={(tok) => set({ value: el.value + tok })} />
+          <QrCheck value={el.value} sizeMm={Math.min(el.w, el.h)} />
           <p className="hint">
             “All details” puts every filled-in field of each person (name, class, phone, email, address…) into the QR. Photos are too big to
             fit inside any QR code.
@@ -320,6 +395,46 @@ function TypeProps({ el, set }: { el: CardElement; set: (p: Partial<CardElement>
         </section>
       );
   }
+}
+
+function MaskSelect({ value, onChange }: { value?: ShapeKind; onChange: (m: ShapeKind) => void }) {
+  return (
+    <Field label="Frame shape (mask)">
+      <select value={value ?? 'rect'} onChange={(e) => onChange(e.target.value as ShapeKind)}>
+        {MASKS.map((m) => (
+          <option key={m} value={m}>
+            {SHAPES.find((x) => x.kind === m)?.label ?? m}
+          </option>
+        ))}
+      </select>
+    </Field>
+  );
+}
+
+/** Warns when QR dots get too small for phones to read reliably. */
+function QrCheck({ value, sizeMm }: { value: string; sizeMm: number }) {
+  const tpl = useStore((s) => s.template)!;
+  const previewId = useStore((s) => s.previewPersonId);
+  const [sample, setSample] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    const pick = previewId != null ? db.people.get(previewId) : db.people.where('templateId').equals(tpl.id).first();
+    pick.then((p) => alive && setSample(p ? resolveText(value, p, false) : null));
+    return () => {
+      alive = false;
+    };
+  }, [value, previewId, tpl.id]);
+  if (!sample) return null;
+  const mod = qrModuleMm(sample, sizeMm);
+  if (!mod) return <p className="warn-box">Too much data for one QR code. Use “Contact card” or fewer fields.</p>;
+  const need = Math.ceil((0.33 / mod) * sizeMm);
+  return mod < 0.33 ? (
+    <p className="warn-box">
+      QR dots are {mod.toFixed(2)} mm – may not scan well. Make the QR at least <b>{need} mm</b> wide, or put less data in it.
+    </p>
+  ) : (
+    <p className="ok-box">✓ QR scans well (dot size {mod.toFixed(2)} mm, {sample.length} characters).</p>
+  );
 }
 
 function FitSelect({ value, onChange }: { value: Fit; onChange: (f: Fit) => void }) {
@@ -417,15 +532,10 @@ function CardProps() {
 
       <section>
         <h3>Data fields</h3>
-        <p className="hint">Columns each record has. Use them in text, QR and barcodes as {'{{Field}}'}.</p>
-        <div className="chips">
-          {tpl.fields.map((f) => (
-            <span className="chip" key={f}>
-              {f}
-              <button onClick={() => mutate((t) => (t.fields = t.fields.filter((x) => x !== f)))} title="Remove field">
-                ✕
-              </button>
-            </span>
+        <p className="hint">Columns each record has (Name, DOB, Address, Blood Group, Mobile…). Type to rename – the card and records update too.</p>
+        <div className="field-list">
+          {tpl.fields.map((f, i) => (
+            <FieldRow key={f} name={f} index={i} />
           ))}
         </div>
         <div className="row">
@@ -441,6 +551,61 @@ function CardProps() {
         </div>
         <p className="hint">Automatic: {SYSTEM_FIELDS.map((f) => `{{${f}}}`).join('  ')}</p>
       </section>
+    </div>
+  );
+}
+
+/** Rename (everywhere: card, QR, records), reorder or remove a data field. */
+function FieldRow({ name, index }: { name: string; index: number }) {
+  const tpl = useStore((s) => s.template)!;
+  const mutate = useStore((s) => s.mutate);
+  const [text, setText] = useState(name);
+  useEffect(() => setText(name), [name]);
+
+  const rename = async () => {
+    const to = text.trim().replace(/[{}]/g, '');
+    if (!to || to === name) return setText(name);
+    if (tpl.fields.includes(to)) {
+      setText(name);
+      return alert(`A field called “${to}” already exists.`);
+    }
+    const re = new RegExp(`\\{\\{\\s*${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\}\\}`, 'g');
+    mutate((t) => {
+      t.fields = t.fields.map((x) => (x === name ? to : x));
+      for (const side of [t.front, t.back])
+        for (const el of side.elements) {
+          if (el.type === 'text') el.text = el.text.replace(re, `{{${to}}}`);
+          if (el.type === 'qr' || el.type === 'barcode') el.value = el.value.replace(re, `{{${to}}}`);
+        }
+    });
+    await db.people
+      .where('templateId')
+      .equals(tpl.id)
+      .modify((p) => {
+        if (name in p.fields) {
+          p.fields[to] = p.fields[name];
+          delete p.fields[name];
+        }
+      });
+  };
+  const move = (d: number) =>
+    mutate((t) => {
+      const j = index + d;
+      if (j < 0 || j >= t.fields.length) return;
+      [t.fields[index], t.fields[j]] = [t.fields[j], t.fields[index]];
+    });
+
+  return (
+    <div className="field-row">
+      <input value={text} onChange={(e) => setText(e.target.value)} onBlur={rename} onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()} title="Type to rename" />
+      <button onClick={() => move(-1)} title="Move up">↑</button>
+      <button onClick={() => move(1)} title="Move down">↓</button>
+      <button
+        onClick={() => confirm(`Remove the field “${name}” from this card? Record data is kept.`) && mutate((t) => (t.fields = t.fields.filter((x) => x !== name)))}
+        title="Remove field"
+      >
+        ✕
+      </button>
     </div>
   );
 }

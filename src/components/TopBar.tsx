@@ -9,6 +9,10 @@ import { safeFileName } from '../lib/utils';
 import { Menu, Modal, toast } from './ui';
 import { GeneratorDialog } from './GeneratorDialog';
 import { LicenseDialog } from './License';
+import { bridge } from '../lib/license';
+import { canSaveToDisk, dateStamp, openFolder, revealFile, saveFile } from '../lib/files';
+import { db } from '../lib/db';
+import { Field, Toggle } from './ui';
 import type { LicenseStatus } from '../lib/license';
 
 export type Tab = 'design' | 'records';
@@ -36,8 +40,17 @@ export function TopBar({
 
   const safeName = safeFileName(tpl.name);
 
-  const exportTemplate = () =>
-    downloadBlob(new Blob([JSON.stringify({ app: 'IDCraft Studio', template: tpl }, null, 2)], { type: 'application/json' }), `${safeName}.idct`);
+  const [nextYear, setNextYear] = useState(false);
+
+  /** Saves the design as a file in Documents › IDCraft Studio › Templates and shows it. */
+  const exportTemplate = async () => {
+    await useStore.getState().saveNow();
+    const file = await saveFile('Templates', `${safeName}.idct`, new Blob([JSON.stringify({ app: 'IDCraft Studio', template: useStore.getState().template }, null, 2)], { type: 'application/json' }));
+    if (file) {
+      await revealFile(file);
+      toast(`Template saved: ${file}`);
+    } else toast('Template file downloaded.');
+  };
 
   const importTemplate = async () => {
     const [f] = await pickFiles('.idct,.json');
@@ -55,16 +68,15 @@ export function TopBar({
 
   const exportPng = async () => {
     const { side, previewPersonId } = useStore.getState();
-    const { db } = await import('../lib/db');
-    const person = previewPersonId ? (await db.people.get(previewPersonId)) ?? null : null;
+        const person = previewPersonId ? (await db.people.get(previewPersonId)) ?? null : null;
     const url = await renderSideToDataURL(tpl, side, person, 300, 'image/png');
     downloadBlob(dataUrlToBlob(url), `${safeName} - ${side}.png`);
   };
 
   const backup = async () => {
     const data = await exportBackup();
-    const stamp = new Date().toISOString().slice(0, 10);
-    downloadBlob(new Blob([JSON.stringify(data)], { type: 'application/json' }), `IDCraft backup ${stamp}.idcb`);
+    const file = await saveFile('Backups', `IDCraft backup ${dateStamp()}.idcb`, new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    await revealFile(file);
     toast(`Backup saved: ${data.templates.length} templates, ${data.people.length} records.`);
   };
 
@@ -89,7 +101,7 @@ export function TopBar({
   return (
     <header className="topbar">
       <div className="brand">
-        <span className="logo">ID</span>
+        <img className="logo-img" src="./icon.png" alt="" />
         <span>IDCraft Studio</span>
       </div>
 
@@ -114,8 +126,10 @@ export function TopBar({
             divider: true,
             onClick: () => addTemplate({ ...clone(tpl), id: uid(), name: `${tpl.name} copy`, createdAt: Date.now(), updatedAt: Date.now() }),
           },
-          { label: 'Export template file…', onClick: exportTemplate },
-          { label: 'Import template file…', onClick: importTemplate },
+          { label: 'Copy for next year…', onClick: () => setNextYear(true) },
+          { label: '💾 Save template to computer', onClick: exportTemplate, divider: true },
+          { label: 'Open saved template file…', onClick: importTemplate },
+          ...(canSaveToDisk() ? [{ label: '📂 Open templates folder', onClick: () => openFolder('Templates') }] : []),
           { label: 'Export current side as PNG', onClick: exportPng },
           {
             label: 'Delete this template…',
@@ -164,11 +178,24 @@ export function TopBar({
           { label: 'Licence…', onClick: () => setShowLicense(true) },
           { label: 'Back up all data…', onClick: backup, divider: true },
           { label: 'Restore from backup…', onClick: restore },
+          ...(canSaveToDisk()
+            ? [
+                { label: '📂 Open saved files folder', onClick: () => openFolder(''), divider: true },
+                {
+                  label: 'Change save folder…',
+                  onClick: async () => {
+                    const d = await bridge?.files?.chooseBaseDir();
+                    if (d) toast(`Files will be saved in ${d}`);
+                  },
+                },
+              ]
+            : []),
           { label: 'Keyboard shortcuts & about', divider: true, onClick: () => setAbout(true) },
         ]}
       />
 
       {generating && <GeneratorDialog onClose={() => setGenerating(false)} />}
+      {nextYear && <NextYearDialog tpl={tpl} onClose={() => setNextYear(false)} />}
       {showLicense && (
         <LicenseDialog
           status={license}
@@ -205,5 +232,75 @@ export function TopBar({
         </Modal>
       )}
     </header>
+  );
+}
+
+/** "2025-26" → "2026-27", "2025" → "2026". */
+function bumpYears(text: string, by = 1): string {
+  return text
+    .replace(/\b(20\d\d)(\s*[-–/]\s*)(20\d\d|\d\d)\b/g, (_m, a: string, sep: string, b: string) => `${Number(a) + by}${sep}${String(Number(b) + by).padStart(b.length, '0')}`)
+    .replace(/\b(20\d\d)\b(?!\s*[-–/]\s*\d)/g, (_m, a: string) => String(Number(a) + by));
+}
+
+/** Makes a copy of the design (and optionally its records) for the next academic year. */
+function NextYearDialog({ tpl, onClose }: { tpl: Template; onClose: () => void }) {
+  const [name, setName] = useState(() => (bumpYears(tpl.name) !== tpl.name ? bumpYears(tpl.name) : `${tpl.name} ${new Date().getFullYear() + 1}`));
+  const [years, setYears] = useState(true);
+  const [records, setRecords] = useState(true);
+  const classField = tpl.fields.find((f) => /class|std|standard|grade|इयत्ता|वर्ग/i.test(f));
+  const [promote, setPromote] = useState(!!classField);
+  const [busy, setBusy] = useState(false);
+
+  const run = async () => {
+    setBusy(true);
+    await useStore.getState().saveNow();
+    const t: Template = { ...clone(tpl), id: uid(), name, createdAt: Date.now(), updatedAt: Date.now() };
+    if (years)
+      for (const side of [t.front, t.back])
+        for (const el of side.elements) {
+          if (el.type === 'text') el.text = bumpYears(el.text);
+          if (el.type === 'qr' || el.type === 'barcode') el.value = bumpYears(el.value);
+        }
+    if (records) {
+      const people = await db.people.where('templateId').equals(tpl.id).toArray();
+      await db.people.bulkAdd(
+        people.map(({ id: _id, ...p }) => {
+          const fields = { ...p.fields };
+          if (promote && classField && fields[classField]) fields[classField] = fields[classField].replace(/\d+/, (n) => String(Number(n) + 1));
+          if (years) for (const k of Object.keys(fields)) if (/year|session|valid|वर्ष/i.test(k)) fields[k] = bumpYears(fields[k]);
+          return { ...p, templateId: t.id, fields, printCount: 0, printedAt: null, createdAt: Date.now() };
+        }),
+      );
+    }
+    await useStore.getState().addTemplate(t);
+    toast(`Created “${name}”. Change names, addresses or photos as needed.`);
+    onClose();
+  };
+
+  return (
+    <Modal
+      title="Copy for next year"
+      onClose={onClose}
+      width={520}
+      footer={
+        <>
+          <span className="grow" />
+          <button className="btn" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="btn primary" onClick={run} disabled={busy || !name.trim()}>
+            Create copy
+          </button>
+        </>
+      }
+    >
+      <Field label="New template name">
+        <input value={name} onChange={(e) => setName(e.target.value)} />
+      </Field>
+      <Toggle label="Change years on the card (2025-26 → 2026-27)" checked={years} onChange={setYears} />
+      <Toggle label="Copy all records (people, photos)" checked={records} onChange={setRecords} />
+      {records && classField && <Toggle label={`Move everyone up one ${classField} (5 → 6)`} checked={promote} onChange={setPromote} />}
+      <p className="hint">The old year stays as it is. Use ✎ Bulk edit on the Records page for other changes.</p>
+    </Modal>
   );
 }

@@ -12,6 +12,7 @@ const LABELS: Record<ElementType, string> = {
   line: 'Line',
   qr: 'QR code',
   barcode: 'Barcode',
+  shape: 'Shape',
 };
 
 export function makeElement(type: ElementType, o: Overrides = {}): CardElement {
@@ -58,6 +59,9 @@ export function makeElement(type: ElementType, o: Overrides = {}): CardElement {
     case 'barcode':
       el = { ...base, type, w: 40, h: 10, value: '{{Serial}}', format: 'CODE128', color: '#000000', showText: true };
       break;
+    case 'shape':
+      el = { ...base, type, w: 15, h: 15, shape: 'star', fill: '#f59e0b', stroke: '#000000', strokeWidth: 0 };
+      break;
   }
   return { ...el, ...o } as CardElement;
 }
@@ -79,6 +83,11 @@ export const CARD_PRESETS = [
   { label: 'CR79 landscape (83.9 × 51 mm)', w: 83.9, h: 51 },
   { label: 'Badge 4 × 3 in (101.6 × 76.2 mm)', w: 101.6, h: 76.2 },
   { label: 'Badge 3 × 4 in (76.2 × 101.6 mm)', w: 76.2, h: 101.6 },
+  { label: 'Photo 4 × 6 in portrait (101.6 × 152.4 mm)', w: 101.6, h: 152.4 },
+  { label: 'Photo 6 × 4 in landscape (152.4 × 101.6 mm)', w: 152.4, h: 101.6 },
+  { label: 'Passport photo 35 × 45 mm', w: 35, h: 45 },
+  { label: 'Photo 50 × 50 mm', w: 50, h: 50 },
+  { label: 'A6 (105 × 148 mm)', w: 105, h: 148 },
 ];
 
 /** Placeholders like {{Name}} used anywhere in a template. */

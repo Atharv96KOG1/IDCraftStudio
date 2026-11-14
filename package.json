@@ -1,7 +1,7 @@
 {
   "name": "idcraft-studio",
   "productName": "IDCraft Studio",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "IDCraft Studio - ID card designer, bulk generator and printer",
   "author": "IDCraft Studio",
   "private": true,
@@ -14,7 +14,8 @@
     "app:start": "npm run build && electron .",
     "dist:win": "npm run build && electron-builder --win --publish never",
     "dist:win-portable": "npm run build && electron-builder --win portable --x64 --publish never",
-    "keygen": "node scripts/keygen.mjs"
+    "keygen": "node scripts/keygen.mjs",
+    "dist:mac": "npm run build && electron-builder --mac --publish never"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.14",
@@ -67,7 +68,7 @@
         }
       ],
       "artifactName": "IDCraft-Studio-Setup.${ext}",
-      "icon": "build/icon.png"
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -79,10 +80,33 @@
       "runAfterFinish": true,
       "shortcutName": "IDCraft Studio",
       "uninstallDisplayName": "IDCraft Studio",
-      "deleteAppDataOnUninstall": false
+      "deleteAppDataOnUninstall": false,
+      "license": "build/license.txt",
+      "installerSidebar": "build/installerSidebar.bmp",
+      "uninstallerSidebar": "build/uninstallerSidebar.bmp",
+      "installerHeader": "build/installerHeader.bmp",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
     },
     "copyright": "Copyright © 2026 IDCraft Studio",
     "asar": true,
-    "afterPack": "scripts/afterPack.cjs"
+    "afterPack": "scripts/afterPack.cjs",
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "artifactName": "IDCraft-Studio-Mac-${arch}.${ext}",
+      "icon": "build/icon.png",
+      "category": "public.app-category.productivity"
+    },
+    "dmg": {
+      "title": "IDCraft Studio"
+    }
   }
 }

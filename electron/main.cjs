@@ -1,5 +1,6 @@
-const { app, BrowserWindow, Menu, shell, session, ipcMain, clipboard } = require('electron');
+const { app, BrowserWindow, Menu, shell, session, ipcMain, clipboard, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { LicenseManager } = require('./license.cjs');
 
 const devServerUrl = process.env.VITE_DEV_SERVER_URL;
@@ -84,6 +85,77 @@ function createWindow() {
   }
 }
 
+// ---------- saving files to the user's computer ----------
+
+const settingsFile = () => path.join(app.getPath('userData'), 'settings.json');
+function readSettings() {
+  try {
+    return JSON.parse(fs.readFileSync(settingsFile(), 'utf8'));
+  } catch {
+    return {};
+  }
+}
+function writeSettings(s) {
+  fs.writeFileSync(settingsFile(), JSON.stringify(s, null, 1));
+}
+/** Base folder for everything the app saves (default: Documents\IDCraft Studio). */
+function baseDir() {
+  const s = readSettings();
+  if (s.saveDir && fs.existsSync(s.saveDir)) return s.saveDir;
+  return path.join(app.getPath('documents'), 'IDCraft Studio');
+}
+const cleanPart = (p) =>
+  String(p)
+    .replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '')
+    .replace(/^[.\s]+|[.\s]+$/g, '')
+    .slice(0, 150) || 'file';
+const inside = (p) => p === baseDir() || p.startsWith(baseDir() + path.sep);
+/** Resolves a sub-folder ("Templates", "Output/School 2026") inside the base folder; never outside it. */
+function folder(sub) {
+  const parts = String(sub || '')
+    .split('/')
+    .filter(Boolean)
+    .map(cleanPart);
+  const dir = path.join(baseDir(), ...parts);
+  if (!inside(dir)) throw new Error('Bad folder');
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+function registerFileIpc() {
+  ipcMain.handle('files:save', (_e, sub, name, data) => {
+    const dir = folder(sub);
+    const file = path.join(dir, cleanPart(name));
+    fs.writeFileSync(file, Buffer.from(data));
+    return file;
+  });
+  ipcMain.handle('files:openFolder', (_e, sub) => shell.openPath(folder(sub)));
+  ipcMain.handle('files:reveal', (_e, file) => {
+    const full = path.resolve(String(file));
+    if (inside(full) && fs.existsSync(full)) shell.showItemInFolder(full);
+  });
+  ipcMain.handle('files:baseDir', () => baseDir());
+  ipcMain.handle('files:chooseBaseDir', async () => {
+    const r = await dialog.showOpenDialog(win, { title: 'Choose where IDCraft Studio saves files', properties: ['openDirectory', 'createDirectory'] });
+    if (r.canceled || !r.filePaths[0]) return null;
+    writeSettings({ ...readSettings(), saveDir: r.filePaths[0] });
+    return baseDir();
+  });
+  ipcMain.handle('files:list', (_e, sub, ext) => {
+    const dir = folder(sub);
+    return fs
+      .readdirSync(dir)
+      .filter((f) => !ext || f.toLowerCase().endsWith(String(ext)))
+      .map((f) => ({ name: f, path: path.join(dir, f), modified: fs.statSync(path.join(dir, f)).mtimeMs }))
+      .sort((a, b) => b.modified - a.modified);
+  });
+  ipcMain.handle('files:read', (_e, file) => {
+    const full = path.resolve(String(file));
+    if (!inside(full)) throw new Error('Bad file');
+    return fs.readFileSync(full, 'utf8');
+  });
+}
+
 app.on('second-instance', () => {
   if (win) {
     if (win.isMinimized()) win.restore();
@@ -100,6 +172,7 @@ app.whenReady().then(() => {
   ipcMain.handle('license:deactivate', () => licenses.deactivate());
   ipcMain.handle('clipboard:write', (_e, text) => clipboard.writeText(text));
   ipcMain.handle('app:version', () => app.getVersion());
+  registerFileIpc();
 
   // Allowed: camera (ID photos) and reading installed font names.
   const allowed = new Set(['media', 'local-fonts']);
