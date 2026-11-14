@@ -1,0 +1,2041 @@
+[
+ {
+  "family": "Abel",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Abril Fatface",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Akshar",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Alegreya",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Aleo",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Alex Brush",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Alfa Slab One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Allura",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Amatic SC",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Amiko",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Amita",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Anek Devanagari",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Anton",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Architects Daughter",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Archivo",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Archivo Black",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Arvo",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Arya",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Asap",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Asar",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Assistant",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Audiowide",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Baloo 2",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Bangers",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Barlow",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Barlow Condensed",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Bebas Neue",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Birthstone",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Biryani",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Bitter",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Black Ops One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Bowlby One SC",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Bungee",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Cabin",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Cambay",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Cardo",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Carter One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Catamaran",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Caveat",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Chakra Petch",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Chivo",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Cinzel",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Cinzel Decorative",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Comfortaa",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Concert One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Cookie",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Cormorant",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Cormorant Garamond",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Courgette",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Courier Prime",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Crete Round",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": true
+ },
+ {
+  "family": "Crimson Text",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Damion",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Dancing Script",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Dekko",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "DM Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "DM Serif Display",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": true
+ },
+ {
+  "family": "Domine",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Dosis",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "EB Garamond",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Eczar",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Encode Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Exo 2",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Figtree",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Fira Code",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Fira Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Fjalla One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Frank Ruhl Libre",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Fredoka",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Gelasio",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Glegoo",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Gloria Hallelujah",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Gotu",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Great Vibes",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Halant",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Handlee",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Heebo",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Herr Von Muellerhoff",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Hind",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Homemade Apple",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "IBM Plex Mono",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "IBM Plex Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Inconsolata",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Indie Flower",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Inknut Antiqua",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Inter",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Italianno",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Jaini",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Jaini Purva",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Jaldi",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "JetBrains Mono",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Josefin Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Josefin Slab",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Jost",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Kadwa",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Kalam",
+  "categories": [
+   "script",
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Kanit",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Karla",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Karma",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Kaushan Script",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Khand",
+  "categories": [
+   "display",
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Khula",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Kurale",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Laila",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Lato",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Lexend",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Libre Baskerville",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Libre Caslon Text",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Libre Franklin",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Lilita One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Lobster",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Lobster Two",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Lora",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Luckiest Guy",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Manrope",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Marcellus",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Marck Script",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Martel",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Martel Sans",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Maven Pro",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Merriweather",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Modak",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Monoton",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Monsieur La Doulaise",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Montserrat",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Mr Dafoe",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Mrs Saint Delafield",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Mukta",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Mulish",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Norican",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Noticia Text",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Noto Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Noto Sans Devanagari",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Noto Serif",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Noto Serif Devanagari",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Nunito",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Nunito Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Old Standard TT",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Open Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Orbitron",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Oswald",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Outfit",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Overpass",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Oxygen",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Pacifico",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Palanquin",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Palanquin Dark",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Parisienne",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Passion One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Patrick Hand",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Paytone One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Permanent Marker",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Pinyon Script",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Play",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Playball",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Playfair Display",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Plus Jakarta Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Poiret One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Poppins",
+  "categories": [
+   "sans",
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Pragati Narrow",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Prata",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Prompt",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "PT Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "PT Serif",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Public Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Questrial",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Quicksand",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Racing Sans One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Rajdhani",
+  "categories": [
+   "display",
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Raleway",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Ranga",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Red Hat Display",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Rhodium Libre",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Righteous",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Roboto",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Roboto Condensed",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Roboto Mono",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Roboto Slab",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Rock Salt",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Rokkitt",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Rozha One",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Rubik",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Russo One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Sacramento",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Sahitya",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Saira",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Sarala",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Sarpanch",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Satisfy",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Secular One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Shadows Into Light",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Share Tech Mono",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Signika",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Sora",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Source Code Pro",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Source Sans 3",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Source Serif 4",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Space Grotesk",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Space Mono",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Spectral",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Squada One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Staatliches",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Sumana",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Sura",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Tangerine",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Teko",
+  "categories": [
+   "display",
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Tillana",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Tiro Devanagari Hindi",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": true
+ },
+ {
+  "family": "Tiro Devanagari Marathi",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": true
+ },
+ {
+  "family": "Tiro Devanagari Sanskrit",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": true
+ },
+ {
+  "family": "Titan One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Titillium Web",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Ubuntu",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Ubuntu Mono",
+  "categories": [
+   "mono"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Ultra",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Urbanist",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Varela Round",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Vesper Libre",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Vollkorn",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Whisper",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Work Sans",
+  "categories": [
+   "sans"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ },
+ {
+  "family": "Yantramanav",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": true,
+  "italic": false
+ },
+ {
+  "family": "Yatra One",
+  "categories": [
+   "marathi"
+  ],
+  "devanagari": true,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Yellowtail",
+  "categories": [
+   "script"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Yeseva One",
+  "categories": [
+   "display"
+  ],
+  "devanagari": false,
+  "bold": false,
+  "italic": false
+ },
+ {
+  "family": "Zilla Slab",
+  "categories": [
+   "serif"
+  ],
+  "devanagari": false,
+  "bold": true,
+  "italic": true
+ }
+]

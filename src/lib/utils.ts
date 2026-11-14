@@ -77,6 +77,17 @@ export async function resizeImage(src: Blob | string, maxSize = 900, quality = 0
   }
 }
 
+/** File-name-safe text that keeps Marathi and other letters. */
+export const safeFileName = (s: string) => s.replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '').replace(/\s+/g, ' ').trim() || 'IDCraft';
+
 export const baseName = (filename: string) => filename.replace(/^.*[\\/]/, '').replace(/\.[^.]+$/, '');
+
+/** Converts a data: URL to a Blob without fetch (fetch of data: is blocked by the CSP). */
+export function dataUrlToBlob(url: string): Blob {
+  const [head, body] = url.split(',', 2);
+  const mime = head.match(/data:([^;]+)/)?.[1] ?? 'application/octet-stream';
+  const bytes = head.includes(';base64') ? Uint8Array.from(atob(body), (c) => c.charCodeAt(0)) : new TextEncoder().encode(decodeURIComponent(body));
+  return new Blob([bytes], { type: mime });
+}
 
 export const nextFrame = () => new Promise<void>((r) => setTimeout(r, 0));

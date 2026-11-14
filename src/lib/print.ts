@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import type { Person, Template } from './types';
 import { renderSideToDataURL } from './render';
-import { nextFrame } from './utils';
+import { dataUrlToBlob, nextFrame } from './utils';
 
 export type Paper = 'A4' | 'Letter' | 'Card';
 export type SidesMode = 'front' | 'back' | 'both';
@@ -98,10 +98,13 @@ export async function buildPages(
   }
 
   const pages: Page[] = [];
+  // Long-edge flip: a portrait sheet mirrors left↔right, a landscape sheet mirrors top↔bottom.
+  const flipRows = grid.pageW > grid.pageH;
   const pos = (i: number, mirror: boolean) => {
-    const row = Math.floor(i / grid.cols);
+    let row = Math.floor(i / grid.cols);
     let col = i % grid.cols;
-    if (mirror) col = grid.cols - 1 - col;
+    if (mirror && !flipRows) col = grid.cols - 1 - col;
+    if (mirror && flipRows) row = grid.rows - 1 - row;
     return { x: grid.originX + col * (tpl.widthMm + o.gapMm), y: grid.originY + row * (tpl.heightMm + o.gapMm) };
   };
   const marks = o.cutMarks && o.paper !== 'Card';
@@ -161,6 +164,16 @@ export function pagesToPdf(pages: Page[]): Blob {
 
 /** Opens the system print dialog via a hidden iframe. */
 export function printPages(pages: Page[]): Promise<void> {
+  // Blob URLs keep the page HTML small even for hundreds of high-DPI cards.
+  const urls = new Map<string, string>();
+  const blobUrl = (src: string) => {
+    let u = urls.get(src);
+    if (!u) {
+      u = URL.createObjectURL(dataUrlToBlob(src));
+      urls.set(src, u);
+    }
+    return u;
+  };
   const css = `
     @page { size: ${pages[0].w}mm ${pages[0].h}mm; margin: 0; }
     html, body { margin: 0; padding: 0; }
@@ -182,7 +195,7 @@ export function printPages(pages: Page[]): Promise<void> {
             .join('')
         : '';
       const imgs = p.items
-        .map((it) => `<img src="${it.src}" style="left:${it.x}mm;top:${it.y}mm;width:${it.w}mm;height:${it.h}mm">`)
+        .map((it) => `<img src="${blobUrl(it.src)}" style="left:${it.x}mm;top:${it.y}mm;width:${it.w}mm;height:${it.h}mm">`)
         .join('');
       return `<div class="page">${marks}${imgs}</div>`;
     })
@@ -202,6 +215,7 @@ export function printPages(pages: Page[]): Promise<void> {
       iframe.contentWindow!.print();
       setTimeout(() => {
         iframe.remove();
+        urls.forEach((u) => URL.revokeObjectURL(u));
         resolve();
       }, 1000);
     });

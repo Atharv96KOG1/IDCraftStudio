@@ -4,12 +4,26 @@ import { STARTERS } from '../lib/templates';
 import { exportBackup, restoreBackup, type Backup } from '../lib/db';
 import { renderSideToDataURL } from '../lib/render';
 import type { Template } from '../lib/types';
-import { clone, downloadBlob, pickFiles, readFileAsText, uid } from '../lib/utils';
+import { clone, dataUrlToBlob, downloadBlob, pickFiles, readFileAsText, uid } from '../lib/utils';
+import { safeFileName } from '../lib/utils';
 import { Menu, Modal, toast } from './ui';
+import { GeneratorDialog } from './GeneratorDialog';
+import { LicenseDialog } from './License';
+import type { LicenseStatus } from '../lib/license';
 
 export type Tab = 'design' | 'records';
 
-export function TopBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+export function TopBar({
+  tab,
+  setTab,
+  license,
+  onLicense,
+}: {
+  tab: Tab;
+  setTab: (t: Tab) => void;
+  license: LicenseStatus;
+  onLicense: (s: LicenseStatus) => void;
+}) {
   const tpl = useStore((s) => s.template)!;
   const templates = useStore((s) => s.templates);
   const saveState = useStore((s) => s.saveState);
@@ -17,8 +31,10 @@ export function TopBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) 
   const canRedo = useStore((s) => s.future.length > 0);
   const { openTemplate, addTemplate, deleteTemplate, undo, redo } = useStore.getState();
   const [about, setAbout] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [showLicense, setShowLicense] = useState(false);
 
-  const safeName = tpl.name.replace(/[^\w\- ]+/g, '');
+  const safeName = safeFileName(tpl.name);
 
   const exportTemplate = () =>
     downloadBlob(new Blob([JSON.stringify({ app: 'IDCraft Studio', template: tpl }, null, 2)], { type: 'application/json' }), `${safeName}.idct`);
@@ -42,7 +58,7 @@ export function TopBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) 
     const { db } = await import('../lib/db');
     const person = previewPersonId ? (await db.people.get(previewPersonId)) ?? null : null;
     const url = await renderSideToDataURL(tpl, side, person, 300, 'image/png');
-    downloadBlob(await (await fetch(url)).blob(), `${safeName} - ${side}.png`);
+    downloadBlob(dataUrlToBlob(url), `${safeName} - ${side}.png`);
   };
 
   const backup = async () => {
@@ -57,7 +73,9 @@ export function TopBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) 
     if (!f) return;
     if (!confirm('Restoring replaces ALL current templates and records with the backup. Continue?')) return;
     try {
-      await restoreBackup(JSON.parse(await readFileAsText(f)) as Backup);
+      const data = JSON.parse(await readFileAsText(f)) as Backup;
+      useStore.setState({ saveState: 'saved', template: null });
+      await restoreBackup(data);
       useStore.setState({ saveState: 'saved' });
       await useStore.getState().refreshTemplates();
       const first = useStore.getState().templates[0];
@@ -82,6 +100,10 @@ export function TopBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) 
           </option>
         ))}
       </select>
+
+      <button className="btn ai-small" onClick={() => setGenerating(true)} title="Describe a card and get ready-made designs">
+        ✨ AI Design
+      </button>
 
       <Menu
         label="Template"
@@ -128,18 +150,35 @@ export function TopBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) 
           </button>
         </div>
       )}
+      {license.state === 'trial' && (
+        <button className={`trial-pill${(license.daysLeft ?? 0) <= 3 ? ' low' : ''}`} onClick={() => setShowLicense(true)}>
+          Trial: {license.daysLeft} day{license.daysLeft === 1 ? '' : 's'} left · Activate
+        </button>
+      )}
       <span className={`save-state ${saveState}`}>{saveState === 'saved' ? '✓ Saved' : 'Saving…'}</span>
 
       <Menu
         label="⚙"
         className="btn icon-btn"
         items={[
-          { label: 'Back up all data…', onClick: backup },
+          { label: 'Licence…', onClick: () => setShowLicense(true) },
+          { label: 'Back up all data…', onClick: backup, divider: true },
           { label: 'Restore from backup…', onClick: restore },
           { label: 'Keyboard shortcuts & about', divider: true, onClick: () => setAbout(true) },
         ]}
       />
 
+      {generating && <GeneratorDialog onClose={() => setGenerating(false)} />}
+      {showLicense && (
+        <LicenseDialog
+          status={license}
+          onClose={() => setShowLicense(false)}
+          onChange={(s) => {
+            onLicense(s);
+            if (s.state === 'expired') setShowLicense(false);
+          }}
+        />
+      )}
       {about && (
         <Modal title="IDCraft Studio" onClose={() => setAbout(false)} width={480}>
           <p>Design, fill and print ID cards. All data stays on this computer.</p>

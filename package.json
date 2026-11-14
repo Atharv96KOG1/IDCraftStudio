@@ -1,7 +1,7 @@
 {
   "name": "idcraft-studio",
   "productName": "IDCraft Studio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "IDCraft Studio - ID card designer, bulk generator and printer",
   "author": "IDCraft Studio",
   "private": true,
@@ -13,9 +13,11 @@
     "build": "tsc --noEmit && vite build",
     "app:start": "npm run build && electron .",
     "dist:win": "npm run build && electron-builder --win --publish never",
-    "dist:win-portable": "npm run build && electron-builder --win portable --x64 --publish never"
+    "dist:win-portable": "npm run build && electron-builder --win portable --x64 --publish never",
+    "keygen": "node scripts/keygen.mjs"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.14",
     "dexie": "^4.0.9",
     "dexie-react-hooks": "^1.1.7",
     "jsbarcode": "^3.11.6",
@@ -49,7 +51,8 @@
     },
     "files": [
       "dist/**",
-      "electron/**"
+      "electron/**",
+      "build/icon.png"
     ],
     "win": {
       "target": [
@@ -77,6 +80,16 @@
       "uninstallDisplayName": "IDCraft Studio",
       "deleteAppDataOnUninstall": false
     },
-    "copyright": "Copyright © 2026 IDCraft Studio"
+    "copyright": "Copyright © 2026 IDCraft Studio",
+    "asar": true,
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true,
+      "grantFileProtocolExtraPrivileges": true
+    }
   }
 }

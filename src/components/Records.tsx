@@ -6,6 +6,9 @@ import type { Person, Template } from '../lib/types';
 import { parseSpreadsheet, exportPeople, downloadSampleSheet, type ParsedSheet } from '../lib/sheets';
 import { baseName, pickFiles, resizeImage } from '../lib/utils';
 import { Camera } from './Camera';
+import { PhotoEditor } from './PhotoEditor';
+import { autoEnhance, originalCopy, BACKGROUNDS } from '../lib/photoAI';
+import { detectColumns, KIND_LABEL } from '../lib/fieldDetect';
 import { PrintDialog } from './PrintDialog';
 import { Field, Modal, Toggle, toast } from './ui';
 
@@ -18,6 +21,7 @@ export function Records({ onPreview }: { onPreview: () => void }) {
   const [importing, setImporting] = useState<ParsedSheet | null>(null);
   const [matching, setMatching] = useState(false);
   const [printing, setPrinting] = useState<Person[] | null>(null);
+  const [enhancing, setEnhancing] = useState<Person[] | null>(null);
   const [filter, setFilter] = useState<'all' | 'unprinted' | 'nophoto'>('all');
 
   const visible = useMemo(() => {
@@ -95,6 +99,14 @@ export function Records({ onPreview }: { onPreview: () => void }) {
         <span className="grow" />
         <button className="btn danger" onClick={deleteSelected} disabled={!chosen.length}>
           Delete selected
+        </button>
+        <button
+          className="btn"
+          onClick={() => setEnhancing((chosen.length ? chosen : visible).filter((p) => p.photo))}
+          disabled={!(chosen.length ? chosen : visible).some((p) => p.photo)}
+          title="Crop to face, straighten and fix colours with AI"
+        >
+          ✨ AI photos
         </button>
         <button className="btn primary" onClick={() => setPrinting(chosen.length ? chosen : visible)} disabled={!visible.length}>
           🖨 Print {chosen.length ? `${chosen.length} selected` : `all ${visible.length} shown`}
@@ -175,6 +187,7 @@ export function Records({ onPreview }: { onPreview: () => void }) {
       {editing && <PersonDialog tpl={tpl} person={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
       {importing && <ImportDialog tpl={tpl} sheet={importing} onClose={() => setImporting(null)} />}
       {matching && people && <PhotoMatchDialog tpl={tpl} people={people} onClose={() => setMatching(false)} />}
+      {enhancing && <BulkPhotoDialog people={enhancing} onClose={() => setEnhancing(null)} />}
       {printing && <PrintDialog tpl={tpl} people={printing} onClose={() => setPrinting(null)} />}
     </div>
   );
@@ -183,15 +196,17 @@ export function Records({ onPreview }: { onPreview: () => void }) {
 function PersonDialog({ tpl, person, onClose }: { tpl: Template; person: Person | null; onClose: () => void }) {
   const [fields, setFields] = useState<Record<string, string>>(() => ({ ...person?.fields }));
   const [photo, setPhoto] = useState<string | null>(person?.photo ?? null);
+  const [original, setOriginal] = useState<string | null>(person?.photoOriginal ?? person?.photo ?? null);
   const [camera, setCamera] = useState(false);
+  const [editing, setEditing] = useState<{ src: string; auto: boolean } | null>(null);
   const extra = Object.keys(fields).filter((k) => !tpl.fields.includes(k));
 
   const save = async () => {
     if (person) {
-      await db.people.update(person.id!, { fields, photo });
+      await db.people.update(person.id!, { fields, photo, photoOriginal: original });
     } else {
       const serial = await reserveSerials(1);
-      await db.people.add({ templateId: tpl.id, serial, fields, photo, createdAt: Date.now(), printCount: 0, printedAt: null });
+      await db.people.add({ templateId: tpl.id, serial, fields, photo, photoOriginal: original, createdAt: Date.now(), printCount: 0, printedAt: null });
     }
     toast(person ? 'Record updated.' : 'Record added.');
     onClose();
@@ -231,8 +246,8 @@ function PersonDialog({ tpl, person, onClose }: { tpl: Template; person: Person 
             <Camera
               onCancel={() => setCamera(false)}
               onCapture={(d) => {
-                setPhoto(d);
                 setCamera(false);
+                setEditing({ src: d, auto: true });
               }}
             />
           ) : (
@@ -243,16 +258,27 @@ function PersonDialog({ tpl, person, onClose }: { tpl: Template; person: Person 
                   className="btn"
                   onClick={async () => {
                     const [f] = await pickFiles('image/*');
-                    if (f) setPhoto(await resizeImage(f, 900));
+                    if (f) setEditing({ src: await resizeImage(f, 2000, 0.92), auto: true });
                   }}
                 >
                   Upload
                 </button>
+                {photo && (
+                  <button className="btn" onClick={() => setEditing({ src: original ?? photo, auto: false })}>
+                    ✨ Edit
+                  </button>
+                )}
                 <button className="btn" onClick={() => setCamera(true)}>
                   Camera
                 </button>
                 {photo && (
-                  <button className="btn" onClick={() => setPhoto(null)}>
+                  <button
+                    className="btn"
+                    onClick={() => {
+                      setPhoto(null);
+                      setOriginal(null);
+                    }}
+                  >
                     Remove
                   </button>
                 )}
@@ -260,6 +286,18 @@ function PersonDialog({ tpl, person, onClose }: { tpl: Template; person: Person 
             </>
           )}
         </div>
+        {editing && (
+          <PhotoEditor
+            source={editing.src}
+            autoRun={editing.auto}
+            onCancel={() => setEditing(null)}
+            onSave={(p, o) => {
+              setPhoto(p);
+              setOriginal(o);
+              setEditing(null);
+            }}
+          />
+        )}
         <div className="fields-col">
           {[...tpl.fields, ...extra].map((f, i) => (
             <Field key={f} label={f}>
@@ -273,31 +311,31 @@ function PersonDialog({ tpl, person, onClose }: { tpl: Template; person: Person 
 }
 
 function ImportDialog({ tpl, sheet, onClose }: { tpl: Template; sheet: ParsedSheet; onClose: () => void }) {
-  const lower = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-  // Map each spreadsheet column to a template field (auto-matched ignoring case/spaces).
-  const [mapping, setMapping] = useState<Record<string, string>>(() =>
-    Object.fromEntries(sheet.columns.map((c) => [c, tpl.fields.find((f) => lower(f) === lower(c)) ?? `new:${c}`])),
-  );
+  const detected = useMemo(() => detectColumns(sheet.columns, sheet.rows, tpl.fields), [sheet, tpl.fields]);
+  const [mapping, setMapping] = useState<Record<string, string>>(() => Object.fromEntries(detected.map((d) => [d.column, d.target])));
   const [busy, setBusy] = useState(false);
+  const info = Object.fromEntries(detected.map((d) => [d.column, d]));
+  const matched = detected.filter((d) => !d.target.startsWith('new:') && d.target !== 'skip').length;
+  const added = Object.values(mapping).filter((v) => v.startsWith('new:')).length;
 
   const run = async () => {
     setBusy(true);
     const used = Object.entries(mapping).filter(([, v]) => v !== 'skip');
-    const newFields = used.filter(([, v]) => v.startsWith('new:')).map(([, v]) => v.slice(4));
+    const newFields = [...new Set(used.filter(([, v]) => v.startsWith('new:')).map(([, v]) => v.slice(4)))];
     if (newFields.length) {
       useStore.getState().mutate((t) => newFields.forEach((f) => !t.fields.includes(f) && t.fields.push(f)));
     }
     const first = await reserveSerials(sheet.rows.length);
     const now = Date.now();
-    const records: Person[] = sheet.rows.map((row, i) => ({
-      templateId: tpl.id,
-      serial: first + i,
-      fields: Object.fromEntries(used.map(([col, target]) => [target.startsWith('new:') ? target.slice(4) : target, row[col] ?? ''])),
-      photo: null,
-      createdAt: now,
-      printCount: 0,
-      printedAt: null,
-    }));
+    const records: Person[] = sheet.rows.map((row, i) => {
+      const fields: Record<string, string> = {};
+      for (const [col, target] of used) {
+        const key = target.startsWith('new:') ? target.slice(4) : target;
+        // Two columns into one field (e.g. first + last name) are joined with a space.
+        fields[key] = fields[key] ? `${fields[key]} ${row[col] ?? ''}`.trim() : row[col] ?? '';
+      }
+      return { templateId: tpl.id, serial: first + i, fields, photo: null, createdAt: now, printCount: 0, printedAt: null };
+    });
     await db.people.bulkAdd(records);
     toast(`Imported ${records.length} records.`);
     onClose();
@@ -307,9 +345,12 @@ function ImportDialog({ tpl, sheet, onClose }: { tpl: Template; sheet: ParsedShe
     <Modal
       title={`Import ${sheet.rows.length} rows`}
       onClose={onClose}
-      width={760}
+      width={880}
       footer={
         <>
+          <span className="hint">
+            ✨ Auto-detected: {matched} matched to card fields{added ? `, ${added} new field${added === 1 ? '' : 's'}` : ''}
+          </span>
           <span className="grow" />
           <button className="btn" onClick={onClose}>
             Cancel
@@ -320,57 +361,69 @@ function ImportDialog({ tpl, sheet, onClose }: { tpl: Template; sheet: ParsedShe
         </>
       }
     >
-      <p className="hint">Choose which card field each column goes into. Unmatched columns are added as new fields.</p>
-      <div className="mapping">
-        {sheet.columns.map((c) => (
-          <div key={c} className="map-row">
-            <span className="col-name">{c}</span>
-            <span>→</span>
-            <select value={mapping[c]} onChange={(e) => setMapping({ ...mapping, [c]: e.target.value })}>
-              {tpl.fields.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-              {!tpl.fields.includes(c) && <option value={`new:${c}`}>New field “{c}”</option>}
-              <option value="skip">Don’t import</option>
-            </select>
-          </div>
-        ))}
-      </div>
-      <h3>Preview</h3>
-      <div className="table-wrap small">
-        <table>
-          <thead>
-            <tr>
-              {sheet.columns.map((c) => (
-                <th key={c}>{c}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {sheet.rows.slice(0, 5).map((r, i) => (
-              <tr key={i}>
-                {sheet.columns.map((c) => (
-                  <td key={c}>{r[c]}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <p className="hint">
+        Column names were read from row {sheet.headerRow} of “{sheet.sheetName}”. Each column was matched automatically by its name
+        and its values. Change any choice below if needed.
+      </p>
+      <div className="detect-table">
+        <div className="detect-head">
+          <span>Column in file</span>
+          <span>Detected as</span>
+          <span>Example</span>
+          <span>Goes into card field</span>
+        </div>
+        {sheet.columns.map((c) => {
+          const d = info[c];
+          const auto = mapping[c] === d.target;
+          return (
+            <div key={c} className="detect-row">
+              <span className="col-name" title={c}>
+                {c}
+              </span>
+              <span>
+                <span className={`kind ${d.confidence}`} title={`Detected from ${d.reason}`}>
+                  {KIND_LABEL[d.kind]}
+                </span>
+              </span>
+              <span className="sample" title={d.sample}>
+                {d.sample || '—'}
+              </span>
+              <span className="row">
+                <select value={mapping[c]} onChange={(e) => setMapping({ ...mapping, [c]: e.target.value })}>
+                  {tpl.fields.map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
+                  {d.target.startsWith('new:') && <option value={d.target}>New field “{d.target.slice(4)}”</option>}
+                  {!d.target.startsWith('new:') && !tpl.fields.includes(c) && <option value={`new:${c}`}>New field “{c}”</option>}
+                  <option value="skip">Don’t import</option>
+                </select>
+                {auto && mapping[c] !== 'skip' && <span className="auto-tag">auto</span>}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </Modal>
   );
 }
 
 function PhotoMatchDialog({ tpl, people, onClose }: { tpl: Template; people: Person[]; onClose: () => void }) {
-  const guess = tpl.fields.find((f) => /id|roll|code|no|number/i.test(f)) ?? tpl.fields[0] ?? 'Serial';
+  const guess =
+    tpl.fields.find((f) => people.some((p) => /\.(jpe?g|png|webp|bmp|gif|heic)$/i.test(p.fields[f] ?? ''))) ??
+    tpl.fields.find((f) => /id|roll|code|no|number|क्रमांक/i.test(f)) ??
+    tpl.fields[0] ??
+    'Serial';
   const [key, setKey] = useState(guess);
   const [overwrite, setOverwrite] = useState(false);
+  const [ai, setAi] = useState(true);
+  const [bg, setBg] = useState<string | null>('#ffffff');
+  const [progress, setProgress] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
 
-  const keyOf = (p: Person) => (key === 'Serial' ? String(p.serial).padStart(5, '0') : p.fields[key] ?? '').trim().toLowerCase();
+  const keyOf = (p: Person) => baseName(key === 'Serial' ? String(p.serial).padStart(5, '0') : p.fields[key] ?? '').trim().toLowerCase();
   const index = useMemo(() => {
     const m = new Map<string, Person[]>();
     for (const p of people) {
@@ -390,15 +443,36 @@ function PhotoMatchDialog({ tpl, people, onClose }: { tpl: Template; people: Per
   const apply = async () => {
     setBusy(true);
     let n = 0;
+    let noFace = 0;
+    let done = 0;
     for (const m of matched) {
-      const src = await resizeImage(m.file, 900);
-      for (const p of m.people) {
-        if (p.photo && !overwrite) continue;
-        await db.people.update(p.id!, { photo: src });
+      setProgress(`Processing ${++done} / ${matched.length}…`);
+      const targets = m.people.filter((p) => !p.photo || overwrite);
+      if (!targets.length) continue;
+      let photo: string;
+      let original: string;
+      try {
+        original = await originalCopy(m.file);
+        if (ai) {
+          const r = await autoEnhance(m.file, { background: bg });
+          photo = r.photo;
+          if (!r.faceFound) noFace++;
+        } else {
+          photo = await resizeImage(m.file, 900);
+        }
+      } catch {
+        continue;
+      }
+      for (const p of targets) {
+        await db.people.update(p.id!, { photo, photoOriginal: original });
         n++;
       }
     }
-    toast(`Added photos to ${n} record(s).`);
+
+    toast(
+      `Added photos to ${n} record(s).${noFace ? ` No face found in ${noFace} photo(s); check them with ✨ Edit.` : ''}`,
+      noFace ? 'error' : 'ok',
+    );
     onClose();
   };
 
@@ -431,6 +505,19 @@ function PhotoMatchDialog({ tpl, people, onClose }: { tpl: Template; people: Per
         </select>
       </Field>
       <Toggle label="Replace photos that already exist" checked={overwrite} onChange={setOverwrite} />
+      <Toggle label="✨ AI: crop to face, straighten and fix colours" checked={ai} onChange={setAi} />
+      {ai && (
+        <Field label="Background">
+          <select value={bg ?? ''} onChange={(e) => setBg(e.target.value || null)}>
+            {BACKGROUNDS.map((b) => (
+              <option key={b.label} value={b.value ?? ''}>
+                {b.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+      )}
+      {progress && busy && <p className="hint">{progress}</p>}
       <div className="btn-row">
         <button className="btn" onClick={async () => setFiles(await pickFiles('image/*', true))}>
           Choose photos…
@@ -456,6 +543,77 @@ function PhotoMatchDialog({ tpl, people, onClose }: { tpl: Template; people: Per
           )}
         </div>
       )}
+    </Modal>
+  );
+}
+
+function BulkPhotoDialog({ people, onClose }: { people: Person[]; onClose: () => void }) {
+  const [bg, setBg] = useState<string | null>('#ffffff');
+  const [smoothing, setSmoothing] = useState(false);
+  const [progress, setProgress] = useState<number | null>(null);
+
+  const run = async () => {
+    let noFace = 0;
+    let failed = 0;
+    for (let i = 0; i < people.length; i++) {
+      setProgress(i);
+      const p = people[i];
+      const source = p.photoOriginal ?? p.photo;
+      if (!source) continue;
+      try {
+        const r = await autoEnhance(source, { background: bg, smoothing: smoothing ? 30 : 0 });
+        if (!r.faceFound) noFace++;
+        await db.people.update(p.id!, { photo: r.photo, photoOriginal: source });
+      } catch {
+        failed++;
+      }
+    }
+    toast(
+      `Improved ${people.length - failed} photo(s).${noFace ? ` No face found in ${noFace}; check them with ✨ Edit.` : ''}${failed ? ` ${failed} failed.` : ''}`,
+      noFace || failed ? 'error' : 'ok',
+    );
+    onClose();
+  };
+
+  return (
+    <Modal
+      title={`AI-improve ${people.length} photo${people.length === 1 ? '' : 's'}`}
+      onClose={() => progress === null && onClose()}
+      width={480}
+      footer={
+        progress !== null ? (
+          <div className="progress">
+            <div className="progress-bar" style={{ width: `${(progress / people.length) * 100}%` }} />
+            <span>
+              Processing {progress + 1} / {people.length}…
+            </span>
+          </div>
+        ) : (
+          <>
+            <span className="grow" />
+            <button className="btn" onClick={onClose}>
+              Cancel
+            </button>
+            <button className="btn primary" onClick={run}>
+              ✨ Start
+            </button>
+          </>
+        )
+      }
+    >
+      <p className="hint">
+        Each photo is cropped to the face, straightened and colour-corrected. Originals are kept, so you can re-edit any photo later.
+      </p>
+      <Field label="Background">
+        <select value={bg ?? ''} onChange={(e) => setBg(e.target.value || null)}>
+          {BACKGROUNDS.map((b) => (
+            <option key={b.label} value={b.value ?? ''}>
+              {b.label}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Toggle label="Light skin smoothing" checked={smoothing} onChange={setSmoothing} />
     </Modal>
   );
 }

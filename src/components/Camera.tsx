@@ -7,9 +7,14 @@ export function Camera({ onCapture, onCancel }: { onCapture: (dataUrl: string) =
 
   useEffect(() => {
     let stream: MediaStream | null = null;
+    let alive = true;
     navigator.mediaDevices
       ?.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false })
       .then((s) => {
+        if (!alive) {
+          s.getTracks().forEach((t) => t.stop());
+          return;
+        }
         stream = s;
         if (video.current) {
           video.current.srcObject = s;
@@ -17,7 +22,10 @@ export function Camera({ onCapture, onCancel }: { onCapture: (dataUrl: string) =
         }
       })
       .catch(() => setError('No camera found, or camera access was denied.'));
-    return () => stream?.getTracks().forEach((t) => t.stop());
+    return () => {
+      alive = false;
+      stream?.getTracks().forEach((t) => t.stop());
+    };
   }, []);
 
   const capture = () => {

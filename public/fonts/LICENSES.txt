@@ -1,0 +1,230 @@
+The fonts in this folder are open-source fonts from Google Fonts (https://fonts.google.com),
+licensed under the SIL Open Font License 1.1 or the Apache License 2.0, which allow
+bundling and redistribution with software. Each font remains the property of its authors.
+
+- Abel: https://fonts.google.com/specimen/Abel
+- Abril Fatface: https://fonts.google.com/specimen/Abril+Fatface
+- Akshar: https://fonts.google.com/specimen/Akshar
+- Alegreya: https://fonts.google.com/specimen/Alegreya
+- Aleo: https://fonts.google.com/specimen/Aleo
+- Alex Brush: https://fonts.google.com/specimen/Alex+Brush
+- Alfa Slab One: https://fonts.google.com/specimen/Alfa+Slab+One
+- Allura: https://fonts.google.com/specimen/Allura
+- Amatic SC: https://fonts.google.com/specimen/Amatic+SC
+- Amiko: https://fonts.google.com/specimen/Amiko
+- Amita: https://fonts.google.com/specimen/Amita
+- Anek Devanagari: https://fonts.google.com/specimen/Anek+Devanagari
+- Anton: https://fonts.google.com/specimen/Anton
+- Architects Daughter: https://fonts.google.com/specimen/Architects+Daughter
+- Archivo: https://fonts.google.com/specimen/Archivo
+- Archivo Black: https://fonts.google.com/specimen/Archivo+Black
+- Arvo: https://fonts.google.com/specimen/Arvo
+- Arya: https://fonts.google.com/specimen/Arya
+- Asap: https://fonts.google.com/specimen/Asap
+- Asar: https://fonts.google.com/specimen/Asar
+- Assistant: https://fonts.google.com/specimen/Assistant
+- Audiowide: https://fonts.google.com/specimen/Audiowide
+- Baloo 2: https://fonts.google.com/specimen/Baloo+2
+- Bangers: https://fonts.google.com/specimen/Bangers
+- Barlow: https://fonts.google.com/specimen/Barlow
+- Barlow Condensed: https://fonts.google.com/specimen/Barlow+Condensed
+- Bebas Neue: https://fonts.google.com/specimen/Bebas+Neue
+- Birthstone: https://fonts.google.com/specimen/Birthstone
+- Biryani: https://fonts.google.com/specimen/Biryani
+- Bitter: https://fonts.google.com/specimen/Bitter
+- Black Ops One: https://fonts.google.com/specimen/Black+Ops+One
+- Bowlby One SC: https://fonts.google.com/specimen/Bowlby+One+SC
+- Bungee: https://fonts.google.com/specimen/Bungee
+- Cabin: https://fonts.google.com/specimen/Cabin
+- Cambay: https://fonts.google.com/specimen/Cambay
+- Cardo: https://fonts.google.com/specimen/Cardo
+- Carter One: https://fonts.google.com/specimen/Carter+One
+- Catamaran: https://fonts.google.com/specimen/Catamaran
+- Caveat: https://fonts.google.com/specimen/Caveat
+- Chakra Petch: https://fonts.google.com/specimen/Chakra+Petch
+- Chivo: https://fonts.google.com/specimen/Chivo
+- Cinzel: https://fonts.google.com/specimen/Cinzel
+- Cinzel Decorative: https://fonts.google.com/specimen/Cinzel+Decorative
+- Comfortaa: https://fonts.google.com/specimen/Comfortaa
+- Concert One: https://fonts.google.com/specimen/Concert+One
+- Cookie: https://fonts.google.com/specimen/Cookie
+- Cormorant: https://fonts.google.com/specimen/Cormorant
+- Cormorant Garamond: https://fonts.google.com/specimen/Cormorant+Garamond
+- Courgette: https://fonts.google.com/specimen/Courgette
+- Courier Prime: https://fonts.google.com/specimen/Courier+Prime
+- Crete Round: https://fonts.google.com/specimen/Crete+Round
+- Crimson Text: https://fonts.google.com/specimen/Crimson+Text
+- Damion: https://fonts.google.com/specimen/Damion
+- Dancing Script: https://fonts.google.com/specimen/Dancing+Script
+- Dekko: https://fonts.google.com/specimen/Dekko
+- DM Sans: https://fonts.google.com/specimen/DM+Sans
+- DM Serif Display: https://fonts.google.com/specimen/DM+Serif+Display
+- Domine: https://fonts.google.com/specimen/Domine
+- Dosis: https://fonts.google.com/specimen/Dosis
+- EB Garamond: https://fonts.google.com/specimen/EB+Garamond
+- Eczar: https://fonts.google.com/specimen/Eczar
+- Encode Sans: https://fonts.google.com/specimen/Encode+Sans
+- Exo 2: https://fonts.google.com/specimen/Exo+2
+- Figtree: https://fonts.google.com/specimen/Figtree
+- Fira Code: https://fonts.google.com/specimen/Fira+Code
+- Fira Sans: https://fonts.google.com/specimen/Fira+Sans
+- Fjalla One: https://fonts.google.com/specimen/Fjalla+One
+- Frank Ruhl Libre: https://fonts.google.com/specimen/Frank+Ruhl+Libre
+- Fredoka: https://fonts.google.com/specimen/Fredoka
+- Gelasio: https://fonts.google.com/specimen/Gelasio
+- Glegoo: https://fonts.google.com/specimen/Glegoo
+- Gloria Hallelujah: https://fonts.google.com/specimen/Gloria+Hallelujah
+- Gotu: https://fonts.google.com/specimen/Gotu
+- Great Vibes: https://fonts.google.com/specimen/Great+Vibes
+- Halant: https://fonts.google.com/specimen/Halant
+- Handlee: https://fonts.google.com/specimen/Handlee
+- Heebo: https://fonts.google.com/specimen/Heebo
+- Herr Von Muellerhoff: https://fonts.google.com/specimen/Herr+Von+Muellerhoff
+- Hind: https://fonts.google.com/specimen/Hind
+- Homemade Apple: https://fonts.google.com/specimen/Homemade+Apple
+- IBM Plex Mono: https://fonts.google.com/specimen/IBM+Plex+Mono
+- IBM Plex Sans: https://fonts.google.com/specimen/IBM+Plex+Sans
+- Inconsolata: https://fonts.google.com/specimen/Inconsolata
+- Indie Flower: https://fonts.google.com/specimen/Indie+Flower
+- Inknut Antiqua: https://fonts.google.com/specimen/Inknut+Antiqua
+- Inter: https://fonts.google.com/specimen/Inter
+- Italianno: https://fonts.google.com/specimen/Italianno
+- Jaini: https://fonts.google.com/specimen/Jaini
+- Jaini Purva: https://fonts.google.com/specimen/Jaini+Purva
+- Jaldi: https://fonts.google.com/specimen/Jaldi
+- JetBrains Mono: https://fonts.google.com/specimen/JetBrains+Mono
+- Josefin Sans: https://fonts.google.com/specimen/Josefin+Sans
+- Josefin Slab: https://fonts.google.com/specimen/Josefin+Slab
+- Jost: https://fonts.google.com/specimen/Jost
+- Kadwa: https://fonts.google.com/specimen/Kadwa
+- Kalam: https://fonts.google.com/specimen/Kalam
+- Kanit: https://fonts.google.com/specimen/Kanit
+- Karla: https://fonts.google.com/specimen/Karla
+- Karma: https://fonts.google.com/specimen/Karma
+- Kaushan Script: https://fonts.google.com/specimen/Kaushan+Script
+- Khand: https://fonts.google.com/specimen/Khand
+- Khula: https://fonts.google.com/specimen/Khula
+- Kurale: https://fonts.google.com/specimen/Kurale
+- Laila: https://fonts.google.com/specimen/Laila
+- Lato: https://fonts.google.com/specimen/Lato
+- Lexend: https://fonts.google.com/specimen/Lexend
+- Libre Baskerville: https://fonts.google.com/specimen/Libre+Baskerville
+- Libre Caslon Text: https://fonts.google.com/specimen/Libre+Caslon+Text
+- Libre Franklin: https://fonts.google.com/specimen/Libre+Franklin
+- Lilita One: https://fonts.google.com/specimen/Lilita+One
+- Lobster: https://fonts.google.com/specimen/Lobster
+- Lobster Two: https://fonts.google.com/specimen/Lobster+Two
+- Lora: https://fonts.google.com/specimen/Lora
+- Luckiest Guy: https://fonts.google.com/specimen/Luckiest+Guy
+- Manrope: https://fonts.google.com/specimen/Manrope
+- Marcellus: https://fonts.google.com/specimen/Marcellus
+- Marck Script: https://fonts.google.com/specimen/Marck+Script
+- Martel: https://fonts.google.com/specimen/Martel
+- Martel Sans: https://fonts.google.com/specimen/Martel+Sans
+- Maven Pro: https://fonts.google.com/specimen/Maven+Pro
+- Merriweather: https://fonts.google.com/specimen/Merriweather
+- Modak: https://fonts.google.com/specimen/Modak
+- Monoton: https://fonts.google.com/specimen/Monoton
+- Monsieur La Doulaise: https://fonts.google.com/specimen/Monsieur+La+Doulaise
+- Montserrat: https://fonts.google.com/specimen/Montserrat
+- Mr Dafoe: https://fonts.google.com/specimen/Mr+Dafoe
+- Mrs Saint Delafield: https://fonts.google.com/specimen/Mrs+Saint+Delafield
+- Mukta: https://fonts.google.com/specimen/Mukta
+- Mulish: https://fonts.google.com/specimen/Mulish
+- Norican: https://fonts.google.com/specimen/Norican
+- Noticia Text: https://fonts.google.com/specimen/Noticia+Text
+- Noto Sans: https://fonts.google.com/specimen/Noto+Sans
+- Noto Sans Devanagari: https://fonts.google.com/specimen/Noto+Sans+Devanagari
+- Noto Serif: https://fonts.google.com/specimen/Noto+Serif
+- Noto Serif Devanagari: https://fonts.google.com/specimen/Noto+Serif+Devanagari
+- Nunito: https://fonts.google.com/specimen/Nunito
+- Nunito Sans: https://fonts.google.com/specimen/Nunito+Sans
+- Old Standard TT: https://fonts.google.com/specimen/Old+Standard+TT
+- Open Sans: https://fonts.google.com/specimen/Open+Sans
+- Orbitron: https://fonts.google.com/specimen/Orbitron
+- Oswald: https://fonts.google.com/specimen/Oswald
+- Outfit: https://fonts.google.com/specimen/Outfit
+- Overpass: https://fonts.google.com/specimen/Overpass
+- Oxygen: https://fonts.google.com/specimen/Oxygen
+- Pacifico: https://fonts.google.com/specimen/Pacifico
+- Palanquin: https://fonts.google.com/specimen/Palanquin
+- Palanquin Dark: https://fonts.google.com/specimen/Palanquin+Dark
+- Parisienne: https://fonts.google.com/specimen/Parisienne
+- Passion One: https://fonts.google.com/specimen/Passion+One
+- Patrick Hand: https://fonts.google.com/specimen/Patrick+Hand
+- Paytone One: https://fonts.google.com/specimen/Paytone+One
+- Permanent Marker: https://fonts.google.com/specimen/Permanent+Marker
+- Pinyon Script: https://fonts.google.com/specimen/Pinyon+Script
+- Play: https://fonts.google.com/specimen/Play
+- Playball: https://fonts.google.com/specimen/Playball
+- Playfair Display: https://fonts.google.com/specimen/Playfair+Display
+- Plus Jakarta Sans: https://fonts.google.com/specimen/Plus+Jakarta+Sans
+- Poiret One: https://fonts.google.com/specimen/Poiret+One
+- Poppins: https://fonts.google.com/specimen/Poppins
+- Pragati Narrow: https://fonts.google.com/specimen/Pragati+Narrow
+- Prata: https://fonts.google.com/specimen/Prata
+- Prompt: https://fonts.google.com/specimen/Prompt
+- PT Sans: https://fonts.google.com/specimen/PT+Sans
+- PT Serif: https://fonts.google.com/specimen/PT+Serif
+- Public Sans: https://fonts.google.com/specimen/Public+Sans
+- Questrial: https://fonts.google.com/specimen/Questrial
+- Quicksand: https://fonts.google.com/specimen/Quicksand
+- Racing Sans One: https://fonts.google.com/specimen/Racing+Sans+One
+- Rajdhani: https://fonts.google.com/specimen/Rajdhani
+- Raleway: https://fonts.google.com/specimen/Raleway
+- Ranga: https://fonts.google.com/specimen/Ranga
+- Red Hat Display: https://fonts.google.com/specimen/Red+Hat+Display
+- Rhodium Libre: https://fonts.google.com/specimen/Rhodium+Libre
+- Righteous: https://fonts.google.com/specimen/Righteous
+- Roboto: https://fonts.google.com/specimen/Roboto
+- Roboto Condensed: https://fonts.google.com/specimen/Roboto+Condensed
+- Roboto Mono: https://fonts.google.com/specimen/Roboto+Mono
+- Roboto Slab: https://fonts.google.com/specimen/Roboto+Slab
+- Rock Salt: https://fonts.google.com/specimen/Rock+Salt
+- Rokkitt: https://fonts.google.com/specimen/Rokkitt
+- Rozha One: https://fonts.google.com/specimen/Rozha+One
+- Rubik: https://fonts.google.com/specimen/Rubik
+- Russo One: https://fonts.google.com/specimen/Russo+One
+- Sacramento: https://fonts.google.com/specimen/Sacramento
+- Sahitya: https://fonts.google.com/specimen/Sahitya
+- Saira: https://fonts.google.com/specimen/Saira
+- Sarala: https://fonts.google.com/specimen/Sarala
+- Sarpanch: https://fonts.google.com/specimen/Sarpanch
+- Satisfy: https://fonts.google.com/specimen/Satisfy
+- Secular One: https://fonts.google.com/specimen/Secular+One
+- Shadows Into Light: https://fonts.google.com/specimen/Shadows+Into+Light
+- Share Tech Mono: https://fonts.google.com/specimen/Share+Tech+Mono
+- Signika: https://fonts.google.com/specimen/Signika
+- Sora: https://fonts.google.com/specimen/Sora
+- Source Code Pro: https://fonts.google.com/specimen/Source+Code+Pro
+- Source Sans 3: https://fonts.google.com/specimen/Source+Sans+3
+- Source Serif 4: https://fonts.google.com/specimen/Source+Serif+4
+- Space Grotesk: https://fonts.google.com/specimen/Space+Grotesk
+- Space Mono: https://fonts.google.com/specimen/Space+Mono
+- Spectral: https://fonts.google.com/specimen/Spectral
+- Squada One: https://fonts.google.com/specimen/Squada+One
+- Staatliches: https://fonts.google.com/specimen/Staatliches
+- Sumana: https://fonts.google.com/specimen/Sumana
+- Sura: https://fonts.google.com/specimen/Sura
+- Tangerine: https://fonts.google.com/specimen/Tangerine
+- Teko: https://fonts.google.com/specimen/Teko
+- Tillana: https://fonts.google.com/specimen/Tillana
+- Tiro Devanagari Hindi: https://fonts.google.com/specimen/Tiro+Devanagari+Hindi
+- Tiro Devanagari Marathi: https://fonts.google.com/specimen/Tiro+Devanagari+Marathi
+- Tiro Devanagari Sanskrit: https://fonts.google.com/specimen/Tiro+Devanagari+Sanskrit
+- Titan One: https://fonts.google.com/specimen/Titan+One
+- Titillium Web: https://fonts.google.com/specimen/Titillium+Web
+- Ubuntu: https://fonts.google.com/specimen/Ubuntu
+- Ubuntu Mono: https://fonts.google.com/specimen/Ubuntu+Mono
+- Ultra: https://fonts.google.com/specimen/Ultra
+- Urbanist: https://fonts.google.com/specimen/Urbanist
+- Varela Round: https://fonts.google.com/specimen/Varela+Round
+- Vesper Libre: https://fonts.google.com/specimen/Vesper+Libre
+- Vollkorn: https://fonts.google.com/specimen/Vollkorn
+- Whisper: https://fonts.google.com/specimen/Whisper
+- Work Sans: https://fonts.google.com/specimen/Work+Sans
+- Yantramanav: https://fonts.google.com/specimen/Yantramanav
+- Yatra One: https://fonts.google.com/specimen/Yatra+One
+- Yellowtail: https://fonts.google.com/specimen/Yellowtail
+- Yeseva One: https://fonts.google.com/specimen/Yeseva+One
+- Zilla Slab: https://fonts.google.com/specimen/Zilla+Slab

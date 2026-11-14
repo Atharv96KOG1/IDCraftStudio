@@ -3,6 +3,7 @@ import type { Person, Template } from '../lib/types';
 import { buildPages, computeGrid, pagesToPdf, printPages, type Paper, type PrintOptions, type SidesMode } from '../lib/print';
 import { db } from '../lib/db';
 import { downloadBlob } from '../lib/utils';
+import { safeFileName } from '../lib/utils';
 import { Field, Modal, NumberInput, Toggle, toast } from './ui';
 
 const saved = (): Partial<PrintOptions> => {
@@ -40,11 +41,13 @@ export function PrintDialog({ tpl, people, onClose }: { tpl: Template; people: P
       setProgress({ done: 0, total: 1 });
       const pages = await buildPages(tpl, people, { ...o, sides }, (done, total) => setProgress({ done, total }));
       if (mode === 'pdf') {
-        downloadBlob(pagesToPdf(pages), `${tpl.name.replace(/[^\w\- ]+/g, '')} - ${people.length} cards.pdf`);
+        downloadBlob(pagesToPdf(pages), `${safeFileName(tpl.name)} - ${people.length} cards.pdf`);
       } else {
         await printPages(pages);
       }
-      if (markPrinted) {
+      // The system print dialog can be cancelled, so ask before counting the cards as printed.
+      const confirmed = mode === 'pdf' || confirm(`Did the ${people.length} card(s) print correctly?\n\nOK = mark them as printed.`);
+      if (markPrinted && confirmed) {
         const now = Date.now();
         await db.transaction('rw', db.people, async () => {
           for (const p of people) {

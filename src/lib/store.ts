@@ -90,6 +90,8 @@ export const useStore = create<State>((set, get) => ({
   },
 
   deleteTemplate: async (id) => {
+    // Stop any pending autosave from writing the template back.
+    if (get().template?.id === id) set({ template: null, saveState: 'saved' });
     await db.transaction('rw', db.templates, db.people, async () => {
       await db.templates.delete(id);
       await db.people.where('templateId').equals(id).delete();

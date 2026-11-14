@@ -14,6 +14,24 @@ Windows desktop app for designing, filling and printing ID cards. Built with Ele
 - **Templates** – 3 starter designs plus blank, duplicate, import/export (`.idct`), PNG export.
 - **Backup / restore** of all templates and records (`.idcb`).
 
+## AI features (all offline)
+
+- **Photo AI** – face detection (BlazeFace) and person/hair/skin segmentation (MediaPipe selfie multiclass) run locally via WebAssembly. One click crops to ID framing, straightens the head, fixes colour/exposure and can replace the background. Full manual controls too. Bulk "✨ AI photos" for many records.
+- **AI Design** – describe a card in English or Marathi ("school ID, green, QR, portrait") and get 6 ready-made designs.
+- **Smart import** – Excel/CSV columns are auto-detected from their names (English + Marathi synonyms) and values (phone, date, email, blood group, photo file names); finds the header row automatically.
+- **QR "All details"** – each person's QR contains all their filled-in fields; "Contact card" makes a vCard.
+
+## Licensing
+
+The app has a 15-day trial, then needs a licence key. Keys are signed with your Ed25519 **private key**, which stays on your computer at `~/.idcraft-license/private.pem` and is never in this repo. **Back that folder up** – without it you cannot issue keys that work with existing installs.
+
+```bash
+npm run keygen -- issue --name "Sunrise School" --machine K7QM-X2PA-9RTD-H4WB --days 365
+npm run keygen -- issue --name "Sunrise School" --any-pc
+```
+
+The customer sees their Machine ID on the activation screen (or Settings ⚙ → Licence).
+
 ## Development
 
 Requires Node.js 20+.

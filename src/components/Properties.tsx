@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { selectedElement, useStore } from '../lib/store';
 import type { BarcodeFormat, CardElement, Fit, Template } from '../lib/types';
 import { SYSTEM_FIELDS } from '../lib/types';
-import { CARD_PRESETS, FONTS } from '../lib/elements';
+import { CARD_PRESETS } from '../lib/elements';
+import { FontPicker } from './FontPicker';
 import { pickFiles, resizeImage, round2 } from '../lib/utils';
 import { ColorInput, Field, NumberInput, Toggle } from './ui';
 
@@ -133,13 +134,7 @@ function TypeProps({ el, set }: { el: CardElement; set: (p: Partial<CardElement>
           <FieldInsert onInsert={(tok) => set({ text: el.text + tok })} />
           <div className="grid2">
             <Field label="Font" wide>
-              <select value={el.fontFamily} onChange={(e) => set({ fontFamily: e.target.value })} style={{ fontFamily: el.fontFamily }}>
-                {FONTS.map((f) => (
-                  <option key={f} value={f} style={{ fontFamily: f }}>
-                    {f}
-                  </option>
-                ))}
-              </select>
+              <FontPicker value={el.fontFamily} text={el.text} onChange={(fontFamily) => set({ fontFamily })} />
             </Field>
             <Field label="Size (pt)">
               <NumberInput value={el.fontSize} min={3} step={0.5} onChange={(fontSize) => set({ fontSize })} />
@@ -181,6 +176,9 @@ function TypeProps({ el, set }: { el: CardElement; set: (p: Partial<CardElement>
             ))}
           </div>
           <Toggle label="Shrink to fit (single line)" checked={el.autoShrink} onChange={(autoShrink) => set({ autoShrink })} />
+          {/[\u0900-\u097F]/.test(el.text) && el.letterSpacing !== 0 && (
+            <p className="hint">Tip: keep letter spacing at 0 for Marathi so letters join correctly.</p>
+          )}
         </section>
       );
 
@@ -271,9 +269,23 @@ function TypeProps({ el, set }: { el: CardElement; set: (p: Partial<CardElement>
       return (
         <section>
           <h3>QR code</h3>
+          <div className="btn-row tight">
+            <button className={el.value === '{{AllDetails}}' ? 'on' : ''} onClick={() => set({ value: '{{AllDetails}}' })} title="Every filled-in field of the person">
+              All details
+            </button>
+            <button className={el.value === '{{vCard}}' ? 'on' : ''} onClick={() => set({ value: '{{vCard}}' })} title="Phones offer to save it as a contact">
+              Contact card
+            </button>
+            <button className={el.value === '{{Serial}}' ? 'on' : ''} onClick={() => set({ value: '{{Serial}}' })}>
+              ID only
+            </button>
+          </div>
           <textarea rows={2} value={el.value} onChange={(e) => set({ value: e.target.value }, 'value')} />
           <FieldInsert onInsert={(tok) => set({ value: el.value + tok })} />
-          <p className="hint">Tip: combine fields, e.g. a vCard or a verification link with {'{{Serial}}'}.</p>
+          <p className="hint">
+            “All details” puts every filled-in field of each person (name, class, phone, email, address…) into the QR. Photos are too big to
+            fit inside any QR code.
+          </p>
           <div className="grid2">
             <Field label="Colour" wide>
               <ColorInput value={el.color} onChange={(color) => set({ color })} />

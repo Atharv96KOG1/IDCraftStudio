@@ -7,10 +7,19 @@ interface Meta {
   value: unknown;
 }
 
+export interface StoredFont {
+  id?: number;
+  family: string;
+  data: ArrayBuffer;
+  fileName: string;
+  addedAt: number;
+}
+
 class IDCraftDB extends Dexie {
   templates!: Table<Template, string>;
   people!: Table<Person, number>;
   meta!: Table<Meta, string>;
+  fonts!: Table<StoredFont, number>;
 
   constructor() {
     super('idcraft-studio');
@@ -19,6 +28,7 @@ class IDCraftDB extends Dexie {
       people: '++id, templateId, serial, createdAt',
       meta: 'key',
     });
+    this.version(2).stores({ fonts: '++id, family' });
   }
 }
 
@@ -52,7 +62,16 @@ export interface Backup {
   templates: Template[];
   people: Person[];
   nextSerial: number;
+  fonts?: { family: string; fileName: string; data: string }[];
 }
+
+const toBase64 = (buf: ArrayBuffer) => {
+  let s = '';
+  const bytes = new Uint8Array(buf);
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+};
+const fromBase64 = (b64: string) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)).buffer;
 
 export async function exportBackup(): Promise<Backup> {
   return {
@@ -62,6 +81,7 @@ export async function exportBackup(): Promise<Backup> {
     templates: await db.templates.toArray(),
     people: await db.people.toArray(),
     nextSerial: ((await db.meta.get('nextSerial'))?.value as number | undefined) ?? 1,
+    fonts: (await db.fonts.toArray()).map((f) => ({ family: f.family, fileName: f.fileName, data: toBase64(f.data) })),
   };
 }
 
@@ -69,11 +89,15 @@ export async function restoreBackup(b: Backup) {
   if (b?.app !== 'IDCraft Studio' || !Array.isArray(b.templates) || !Array.isArray(b.people)) {
     throw new Error('This file is not an IDCraft Studio backup.');
   }
-  await db.transaction('rw', db.templates, db.people, db.meta, async () => {
+  await db.transaction('rw', [db.templates, db.people, db.meta, db.fonts], async () => {
     await db.templates.clear();
     await db.people.clear();
     await db.templates.bulkPut(b.templates);
     await db.people.bulkPut(b.people);
+    if (b.fonts?.length) {
+      await db.fonts.clear();
+      await db.fonts.bulkAdd(b.fonts.map((f) => ({ family: f.family, fileName: f.fileName, data: fromBase64(f.data), addedAt: Date.now() })));
+    }
     await db.meta.put({ key: 'nextSerial', value: b.nextSerial ?? 1 });
   });
 }

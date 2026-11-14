@@ -46,7 +46,7 @@ function corporate(): Template {
         text: 'Your Company Pvt. Ltd.\n123 Business Street, Your City\nPhone: +00 00000 00000',
         x: 5, y: 9, w: 52, h: 13, fontSize: 7, vAlign: 'top', color: '#334155',
       }),
-      el('qr', { x: 63, y: 5, w: 18, h: 18, value: '{{EmployeeID}}' }),
+      el('qr', { x: 63, y: 5, w: 18, h: 18, value: '{{AllDetails}}' }),
       el('text', { name: 'Blood group', text: 'Blood Group: {{BloodGroup}}', x: 5, y: 26, w: 50, h: 4.5, fontSize: 7.5 }),
       el('text', { name: 'Emergency', text: 'Emergency: {{EmergencyContact}}', x: 5, y: 30.5, w: 50, h: 4.5, fontSize: 7.5 }),
       el('text', { name: 'Issued', text: 'Issued: {{IssueDate}}', x: 5, y: 35, w: 50, h: 4.5, fontSize: 7.5 }),
@@ -81,7 +81,7 @@ function school(): Template {
       el('text', { name: 'Parent', text: 'Parent: {{ParentName}}', x: 4, y: 11, w: 46, h: 4.5, fontSize: 7.5 }),
       el('text', { name: 'Phone', text: 'Phone: {{Phone}}', x: 4, y: 15.5, w: 46, h: 4.5, fontSize: 7.5 }),
       el('text', { name: 'Address', text: 'Address: {{Address}}', x: 4, y: 20, w: 46, h: 12, fontSize: 7.5, vAlign: 'top' }),
-      el('qr', { x: 17, y: 35, w: 20, h: 20, value: '{{RollNo}}' }),
+      el('qr', { x: 17, y: 35, w: 20, h: 20, value: '{{AllDetails}}' }),
       el('text', {
         name: 'Rules',
         text: 'This card is the property of the school. Carry it at all times on campus. If found, please return to the school office.',
@@ -107,7 +107,7 @@ function eventPass(): Template {
       el('text', { name: 'Organization', text: '{{Organization}}', x: 3, y: 44, w: 48, h: 5, fontSize: 8, color: '#cbd5e1', align: 'center' }),
       el('rect', { name: 'Role badge', x: 11, y: 52, w: 32, h: 7, fill: '#f59e0b', radius: 3.5 }),
       el('text', { name: 'Role', text: '{{Role}}', x: 11, y: 52, w: 32, h: 7, fontSize: 8.5, bold: true, color: '#111827', align: 'center', uppercase: true }),
-      el('qr', { x: 18.5, y: 63, w: 17, h: 17, value: '{{PassID}}' }),
+      el('qr', { x: 18.5, y: 63, w: 17, h: 17, value: '{{AllDetails}}' }),
     ]),
     side('#111827', [
       el('text', { name: 'Title', text: 'ACCESS PASS', x: 3, y: 6, w: 48, h: 7, fontSize: 11, bold: true, color: '#ffffff', align: 'center' }),
@@ -121,12 +121,51 @@ function eventPass(): Template {
   );
 }
 
+
+function marathiSchool(): Template {
+  const saffron = '#c2410c';
+  const F = 'Tiro Devanagari Marathi';
+  const M = 'Mukta';
+  return tpl(
+    'मराठी शाळा ओळखपत्र',
+    54,
+    85.6,
+    ['नाव', 'इयत्ता', 'हजेरी क्रमांक', 'जन्मतारीख', 'पालकाचे नाव', 'मोबाईल', 'पत्ता'],
+    side('#fffbeb', [
+      el('rect', { name: 'Header', x: 0, y: 0, w: 54, h: 25, fill: saffron }),
+      el('text', { name: 'School', text: 'शाळेचे नाव', x: 3, y: 2, w: 48, h: 8, fontFamily: F, fontSize: 13, bold: true, color: '#ffffff', align: 'center' }),
+      el('text', { name: 'Subtitle', text: 'विद्यार्थी ओळखपत्र', x: 3, y: 9.5, w: 48, h: 5, fontFamily: M, fontSize: 8, color: '#ffedd5', align: 'center' }),
+      el('photo', { x: 14.5, y: 15, w: 25, h: 25, radius: 12.5, borderColor: '#ffffff', borderWidth: 0.9 }),
+      el('text', { name: 'Name', text: '{{नाव}}', x: 3, y: 41.5, w: 48, h: 8, fontFamily: F, fontSize: 12, bold: true, align: 'center', autoShrink: true }),
+      el('text', { name: 'Class', text: 'इयत्ता: {{इयत्ता}}', x: 3, y: 50, w: 48, h: 5, fontFamily: M, fontSize: 8.5, align: 'center', color: '#334155' }),
+      el('text', { name: 'Roll', text: 'हजेरी क्रमांक: {{हजेरी क्रमांक}}', x: 3, y: 55, w: 48, h: 5, fontFamily: M, fontSize: 8.5, align: 'center', color: '#334155' }),
+      el('text', { name: 'DOB', text: 'जन्मतारीख: {{जन्मतारीख}}', x: 3, y: 60, w: 48, h: 5, fontFamily: M, fontSize: 8.5, align: 'center', color: '#334155' }),
+      el('barcode', { x: 10, y: 67, w: 34, h: 10, value: '{{Serial}}', showText: true }),
+      el('rect', { name: 'Footer', x: 0, y: 81, w: 54, h: 4.6, fill: saffron }),
+    ]),
+    side('#fffbeb', [
+      el('text', { name: 'Info title', text: 'विद्यार्थ्याची माहिती', x: 3, y: 4, w: 48, h: 6, fontFamily: F, fontSize: 10, bold: true, align: 'center', color: saffron }),
+      el('text', { name: 'Parent', text: 'पालकाचे नाव: {{पालकाचे नाव}}', x: 4, y: 12, w: 46, h: 5, fontFamily: M, fontSize: 8 }),
+      el('text', { name: 'Phone', text: 'मोबाईल: {{मोबाईल}}', x: 4, y: 17, w: 46, h: 5, fontFamily: M, fontSize: 8 }),
+      el('text', { name: 'Address', text: 'पत्ता: {{पत्ता}}', x: 4, y: 22, w: 46, h: 12, fontFamily: M, fontSize: 8, vAlign: 'top' }),
+      el('qr', { x: 17, y: 36, w: 20, h: 20, value: '{{AllDetails}}' }),
+      el('text', {
+        name: 'Rules',
+        text: 'हे ओळखपत्र शाळेची मालमत्ता आहे. शाळेत असताना नेहमी सोबत ठेवावे. सापडल्यास कृपया शाळेच्या कार्यालयात जमा करावे.',
+        x: 4, y: 59, w: 46, h: 18, fontFamily: M, fontSize: 7, vAlign: 'top', align: 'center', color: '#475569',
+      }),
+      el('rect', { name: 'Footer', x: 0, y: 81, w: 54, h: 4.6, fill: saffron }),
+    ]),
+  );
+}
+
 export const STARTERS: { label: string; make: () => Template }[] = [
   { label: 'Blank – landscape', make: () => blankTemplate(false) },
   { label: 'Blank – portrait', make: () => blankTemplate(true) },
   { label: 'Corporate – Blue', make: corporate },
   { label: 'School – Green (portrait)', make: school },
   { label: 'Event pass – Dark (portrait)', make: eventPass },
+  { label: 'मराठी शाळा ओळखपत्र (Marathi school)', make: marathiSchool },
 ];
 
-export const SEED_TEMPLATES = () => [corporate(), school(), eventPass()];
+export const SEED_TEMPLATES = () => [corporate(), school(), eventPass(), marathiSchool()];

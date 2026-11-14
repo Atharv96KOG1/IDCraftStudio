@@ -3,6 +3,8 @@ import QRCode from 'qrcode';
 import JsBarcode from 'jsbarcode';
 import type { CardElement, Fit, Person, SideKey, Template } from './types';
 import { PT_TO_MM, formatDate } from './utils';
+import { ensureFont } from './fonts';
+import { conceptFromName } from './fieldDetect';
 
 export interface RenderOptions {
   /** Pixels per millimetre. */
@@ -14,10 +16,47 @@ export interface RenderOptions {
 
 // ---------- placeholder text ----------
 
+const HIDDEN_FIELDS = /^photo ?file$/i;
+
+/** Every filled-in field of the person as "Label: value" lines (for QR codes). */
+function allDetails(person: Person): string {
+  const lines = Object.entries(person.fields)
+    .filter(([k, v]) => v?.trim() && !HIDDEN_FIELDS.test(k))
+    .map(([k, v]) => `${k.replace(/([a-z])([A-Z])/g, '$1 $2')}: ${v.trim()}`);
+  lines.push(`ID No: ${String(person.serial).padStart(5, '0')}`);
+  return lines.join('\n');
+}
+
+const vEsc = (s: string) => s.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([,;])/g, '\\$1');
+
+/** vCard 3.0 so phones offer "Add to contacts" when the QR is scanned. */
+function vCard(person: Person): string {
+  const by: Partial<Record<string, string>> = {};
+  const rest: string[] = [];
+  for (const [k, v] of Object.entries(person.fields)) {
+    if (!v?.trim() || HIDDEN_FIELDS.test(k)) continue;
+    const kind = conceptFromName(k.replace(/([a-z])([A-Z])/g, '$1 $2'))?.kind;
+    if (kind && ['name', 'phone', 'email', 'address', 'company', 'designation', 'department'].includes(kind) && !by[kind]) by[kind] = v.trim();
+    else rest.push(`${k.replace(/([a-z])([A-Z])/g, '$1 $2')}: ${v.trim()}`);
+  }
+  const name = by.name ?? Object.values(person.fields).find((v) => v?.trim()) ?? '';
+  const out = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${vEsc(name)}`, `N:${vEsc(name)};;;;`];
+  if (by.company) out.push(`ORG:${vEsc(by.company)}${by.department ? `;${vEsc(by.department)}` : ''}`);
+  if (by.designation) out.push(`TITLE:${vEsc(by.designation)}`);
+  if (by.phone) out.push(`TEL;TYPE=CELL:${by.phone.replace(/[^\d+]/g, '')}`);
+  if (by.email) out.push(`EMAIL:${vEsc(by.email)}`);
+  if (by.address) out.push(`ADR;TYPE=HOME:;;${vEsc(by.address)};;;;`);
+  rest.push(`ID No: ${String(person.serial).padStart(5, '0')}`);
+  out.push(`NOTE:${vEsc(rest.join('\n'))}`, 'END:VCARD');
+  return out.join('\r\n');
+}
+
 function lookup(key: string, person: Person | null): string | undefined {
   if (key === 'Today') return formatDate(new Date());
   if (!person) return undefined;
   if (key === 'Serial') return String(person.serial).padStart(5, '0');
+  if (key === 'AllDetails') return allDetails(person);
+  if (key === 'vCard') return vCard(person);
   if (key === 'IssueDate') return formatDate(new Date(person.createdAt));
   const f = person.fields;
   if (key in f) return f[key] ?? '';
@@ -60,11 +99,12 @@ function qrImage(value: string, dark: string, light: string): Promise<HTMLImageE
   if (!p) {
     p = QRCode.toDataURL(value, {
       margin: 0,
-      width: 600,
-      errorCorrectionLevel: 'M',
+      width: 900,
+      errorCorrectionLevel: value.length > 250 ? 'L' : 'M',
       color: { dark, light: light === 'transparent' ? '#0000' : light },
     }).then(loadImage);
     qrCache.set(key, p);
+    p.catch(() => qrCache.delete(key));
     if (qrCache.size > 300) qrCache.delete(qrCache.keys().next().value!);
   }
   return p;
@@ -128,10 +168,13 @@ function roundedClip(W: number, H: number, r: number) {
 
 const SERIF = ['Georgia', 'Times New Roman', 'Cambria'];
 const MONO = ['Courier New', 'Consolas'];
-/** Fallback fonts so a design still renders sensibly where a font is missing. */
+/**
+ * Fallback chain so a design still renders where a font is missing, and so
+ * Marathi text in a Latin-only font still shows with a Devanagari font.
+ */
 function withFallback(font: string) {
-  const generic = SERIF.includes(font) ? 'serif' : MONO.includes(font) ? 'monospace' : 'Arial, Helvetica, sans-serif';
-  return `"${font}", ${generic}`;
+  const generic = SERIF.includes(font) ? 'serif' : MONO.includes(font) ? 'monospace' : 'sans-serif';
+  return `"${font}", "Noto Sans Devanagari", "Nirmala UI", "Mangal", Arial, ${generic}`;
 }
 
 const visibleColor =(c: string) => !!c && c !== 'transparent';
@@ -217,6 +260,10 @@ async function buildElement(el: CardElement, o: RenderOptions): Promise<Konva.Gr
     case 'text': {
       let text = resolveText(el.text, o.person, o.placeholders);
       if (el.uppercase) text = text.toUpperCase();
+      await Promise.all([
+        ensureFont(el.fontFamily, el.bold, el.italic, text),
+        /[\u0900-\u097F]/.test(text) ? ensureFont('Noto Sans Devanagari', el.bold, false, text) : null,
+      ]);
       let fontSize = el.fontSize * PT_TO_MM * s;
       const node = new Konva.Text({
         width: W,
@@ -230,7 +277,8 @@ async function buildElement(el: CardElement, o: RenderOptions): Promise<Konva.Gr
         align: el.align,
         verticalAlign: el.vAlign,
         lineHeight: el.lineHeight,
-        letterSpacing: el.letterSpacing * s * 0.1,
+        // Per-letter spacing would split Marathi conjuncts, so it is ignored for Devanagari text.
+        letterSpacing: /[\u0900-\u097F]/.test(text) ? 0 : el.letterSpacing * s * 0.1,
         wrap: el.autoShrink ? 'none' : 'word',
         ellipsis: !el.autoShrink,
       });
@@ -295,8 +343,12 @@ async function buildElement(el: CardElement, o: RenderOptions): Promise<Konva.Gr
         const pad = size * 0.06;
         g.add(new Konva.Rect({ x: offX - pad, y: offY - pad, width: size + pad * 2, height: size + pad * 2, fill: el.background }));
       }
-      const img = await qrImage(value, el.color, 'transparent');
-      g.add(new Konva.Image({ image: img, x: offX, y: offY, width: size, height: size }));
+      try {
+        const img = await qrImage(value, el.color, 'transparent');
+        g.add(new Konva.Image({ image: img, x: offX, y: offY, width: size, height: size }));
+      } catch {
+        if (o.placeholders) g.add(placeholderBox(W, H, 'Too much data for QR', s));
+      }
       break;
     }
 

@@ -77,7 +77,13 @@ export function CardCanvas() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const card = await buildSide(template, side, { scale, person, placeholders: true });
+      let card: Konva.Group;
+      try {
+        card = await buildSide(template, side, { scale, person, placeholders: true });
+      } catch (e) {
+        console.error('Card render failed', e);
+        return;
+      }
       if (cancelled) {
         card.destroy();
         return;

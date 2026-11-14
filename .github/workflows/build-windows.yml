@@ -20,6 +20,18 @@ jobs:
       - run: npm ci
       # One installer that works on 64-bit, 32-bit and ARM Windows 10/11.
       - run: npm run dist:win
+      # Launch the real packaged app (64-bit and 32-bit) and make sure it starts.
+      - name: Smoke test installed app
+        shell: pwsh
+        run: |
+          foreach ($dir in @('release/win-unpacked', 'release/win-ia32-unpacked')) {
+            $exe = Join-Path $dir 'IDCraft Studio.exe'
+            Write-Host "Testing $exe"
+            $p = Start-Process -FilePath $exe -ArgumentList '--smoke-test' -PassThru
+            if (-not $p.WaitForExit(90000)) { Stop-Process -Id $p.Id -Force; throw "$exe did not finish" }
+            if ($p.ExitCode -ne 0) { throw "$exe smoke test failed with exit code $($p.ExitCode)" }
+            Write-Host "OK: $exe"
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: IDCraft-Studio-Windows

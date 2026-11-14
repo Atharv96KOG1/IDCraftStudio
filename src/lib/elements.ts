@@ -53,7 +53,7 @@ export function makeElement(type: ElementType, o: Overrides = {}): CardElement {
       el = { ...base, type, w: 30, h: 1, stroke: '#111827', strokeWidth: 0.3, dashed: false };
       break;
     case 'qr':
-      el = { ...base, type, w: 18, h: 18, value: '{{Serial}}', color: '#000000', background: '#ffffff' };
+      el = { ...base, type, w: 18, h: 18, value: '{{AllDetails}}', color: '#000000', background: '#ffffff' };
       break;
     case 'barcode':
       el = { ...base, type, w: 40, h: 10, value: '{{Serial}}', format: 'CODE128', color: '#000000', showText: true };
@@ -72,20 +72,6 @@ export function makeCentered(type: ElementType, tpl: Template): CardElement {
   return el;
 }
 
-export const FONTS = [
-  'Segoe UI',
-  'Arial',
-  'Calibri',
-  'Cambria',
-  'Georgia',
-  'Times New Roman',
-  'Verdana',
-  'Tahoma',
-  'Trebuchet MS',
-  'Courier New',
-  'Impact',
-  'Consolas',
-];
 
 export const CARD_PRESETS = [
   { label: 'CR80 landscape (85.6 × 54 mm)', w: 85.6, h: 54 },

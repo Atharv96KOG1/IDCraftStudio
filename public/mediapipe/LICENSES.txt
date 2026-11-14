@@ -1,0 +1,6 @@
+MediaPipe Tasks Vision runtime and models (BlazeFace short-range face detector,
+Selfie multiclass segmentation) by Google, licensed under the Apache License 2.0.
+https://github.com/google-ai-edge/mediapipe
+https://ai.google.dev/edge/mediapipe/solutions/vision/face_detector
+https://ai.google.dev/edge/mediapipe/solutions/vision/image_segmenter
+All processing runs locally on this computer; no photo is uploaded.

@@ -126,9 +126,11 @@ export interface Person {
   serial: number;
   fields: Record<string, string>;
   photo: string | null;
+  /** Unedited photo, kept so the photo can be re-edited. */
+  photoOriginal?: string | null;
   createdAt: number;
   printCount: number;
   printedAt: number | null;
 }
 
-export const SYSTEM_FIELDS = ['Serial', 'IssueDate', 'Today'] as const;
+export const SYSTEM_FIELDS = ['Serial', 'IssueDate', 'Today', 'AllDetails', 'vCard'] as const;
