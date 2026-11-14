@@ -30,6 +30,7 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
+    "@electron/fuses": "^1.8.0",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
@@ -82,14 +83,6 @@
     },
     "copyright": "Copyright © 2026 IDCraft Studio",
     "asar": true,
-    "electronFuses": {
-      "runAsNode": false,
-      "enableCookieEncryption": true,
-      "enableNodeOptionsEnvironmentVariable": false,
-      "enableNodeCliInspectArguments": false,
-      "enableEmbeddedAsarIntegrityValidation": true,
-      "onlyLoadAppFromAsar": true,
-      "grantFileProtocolExtraPrivileges": true
-    }
+    "afterPack": "scripts/afterPack.cjs"
   }
 }
