@@ -476,22 +476,45 @@ export async function buildSide(tpl: Template, sideKey: SideKey, o: RenderOption
   return card;
 }
 
-/** Renders a side to a canvas at the given DPI (for printing / export). */
-export async function renderSideToCanvas(tpl: Template, sideKey: SideKey, person: Person | null, dpi = 300): Promise<HTMLCanvasElement> {
+/**
+ * Renders a side at the given DPI and hands the canvas to `use` before freeing
+ * it. Uses exactly one canvas of the final size (no screen scaling, no copy),
+ * which keeps memory low for 1200/2400 dpi exports.
+ */
+export async function withRenderedSide<T>(
+  tpl: Template,
+  sideKey: SideKey,
+  person: Person | null,
+  dpi: number,
+  use: (canvas: HTMLCanvasElement) => T | Promise<T>,
+): Promise<T> {
   const scale = dpi / 25.4;
   const W = Math.round(tpl.widthMm * scale);
   const H = Math.round(tpl.heightMm * scale);
   const container = document.createElement('div');
   const stage = new Konva.Stage({ container, width: W, height: H });
   const layer = new Konva.Layer();
+  // Windows display scaling (125–200 %) would otherwise multiply the canvas size.
+  layer.getCanvas().setPixelRatio(1);
   stage.add(layer);
   try {
     layer.add(await buildSide(tpl, sideKey, { scale, person, placeholders: false }));
     layer.draw();
-    return stage.toCanvas({ pixelRatio: 1 });
+    return await use(layer.getNativeCanvasElement());
   } finally {
     stage.destroy();
   }
+}
+
+/** Renders a side to a (copied) canvas at the given DPI (for printing). */
+export function renderSideToCanvas(tpl: Template, sideKey: SideKey, person: Person | null, dpi = 300): Promise<HTMLCanvasElement> {
+  return withRenderedSide(tpl, sideKey, person, dpi, (src) => {
+    const c = document.createElement('canvas');
+    c.width = src.width;
+    c.height = src.height;
+    c.getContext('2d')!.drawImage(src, 0, 0);
+    return c;
+  });
 }
 
 /** Renders a side to an image data URL at the given DPI. */

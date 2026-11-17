@@ -71,7 +71,7 @@ export default function App() {
       </div>
     );
   if (license.state === 'expired' || license.state === 'clock') return <ActivationScreen status={license} onDone={setLicense} />;
-  if (welcome && (license.state !== 'dev' || location.search.includes('wizard')))
+  if (license.state === 'new' || (welcome && (license.state !== 'dev' || location.search.includes('wizard'))))
     return (
       <WelcomeWizard
         status={license}

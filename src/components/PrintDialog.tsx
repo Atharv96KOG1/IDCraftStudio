@@ -17,7 +17,8 @@ import {
   type PrintOptions,
   type SidesMode,
 } from '../lib/print';
-import { renderSideToCanvas } from '../lib/render';
+import { withRenderedSide } from '../lib/render';
+import { useRef } from 'react';
 import { db } from '../lib/db';
 import { canSaveToDisk, canvasToBlob, dateStamp, openFolder, saveFile } from '../lib/files';
 import { nextFrame, safeFileName } from '../lib/utils';
@@ -40,6 +41,7 @@ export function PrintDialog({ tpl, people, onClose }: { tpl: Template; people: P
   const [cardFormat, setCardFormat] = useState<'png' | 'jpg'>('png');
   const [cardDpi, setCardDpi] = useState(600);
   const [nameField, setNameField] = useState(tpl.fields[0] ?? 'Serial');
+  const cancel = useRef(false);
   const set = (p: Partial<PrintOptions>) => {
     const next = { ...o, ...p };
     setO(next);
@@ -117,14 +119,21 @@ export function PrintDialog({ tpl, people, onClose }: { tpl: Template; people: P
       used.set(name, n + 1);
       if (n) name = `${name} (${n + 1})`;
       for (const side of sideList) {
+        if (cancel.current) break;
         setProgress({ done, total, label: `Saving ${cardDpi} dpi images` });
-        const canvas = await renderSideToCanvas(tpl, side, p, cardDpi);
-        const blob = await canvasToBlob(canvas, cardFormat, cardDpi);
-        canvas.width = canvas.height = 0; // free memory early (big at 2400 dpi)
+        const blob = await withRenderedSide(tpl, side, p, cardDpi, (canvas) => canvasToBlob(canvas, cardFormat, cardDpi));
         await saveFile(sub, `${name}${sideList.length > 1 ? ` - ${side}` : ''}.${cardFormat}`, blob);
         done++;
         await nextFrame();
       }
+      if (cancel.current) break;
+    }
+    if (cancel.current) {
+      toast(`Stopped. ${done} image(s) were saved.`);
+      setProgress(null);
+      cancel.current = false;
+      if (canSaveToDisk() && done) await openFolder(sub);
+      return;
     }
     if (canSaveToDisk()) {
       await openFolder(sub);
@@ -148,6 +157,11 @@ export function PrintDialog({ tpl, people, onClose }: { tpl: Template; people: P
             <span>
               {progress.label} {progress.done} / {progress.total}…
             </span>
+            {progress.label.includes('dpi') && (
+              <button className="btn" onClick={() => (cancel.current = true)}>
+                Stop
+              </button>
+            )}
           </div>
         ) : (
           <>
@@ -314,6 +328,12 @@ export function PrintDialog({ tpl, people, onClose }: { tpl: Template; people: P
             Save images
           </button>
         </div>
+        {cardDpi >= 1200 && (
+          <p className="warn-box">
+            {cardDpi} dpi makes very large files (about {Math.round(((tpl.widthMm / 25.4) * cardDpi * (tpl.heightMm / 25.4) * cardDpi * (cardFormat === 'png' ? 1.2 : 0.35)) / 1e6)} MB
+            each) and takes a few seconds per card. Card printers need only 300 dpi; use 600 for very sharp results. You can stop at any time.
+          </p>
+        )}
       </section>
     </Modal>
   );

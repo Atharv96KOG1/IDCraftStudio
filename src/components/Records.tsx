@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useStore } from '../lib/store';
 import { db, reserveSerials } from '../lib/db';
@@ -6,7 +6,7 @@ import type { Person, Template } from '../lib/types';
 import { parseSpreadsheet, exportPeople, downloadSampleSheet, type ParsedSheet } from '../lib/sheets';
 import { pickFiles, resizeImage } from '../lib/utils';
 import { guessPhotoField, isImageFile, matchPhotos } from '../lib/photoMatch';
-import { toMarathi } from '../lib/marathi';
+import { isKnownWord, toMarathi } from '../lib/marathi';
 import { Camera } from './Camera';
 import { PhotoEditor } from './PhotoEditor';
 import { autoEnhance, originalCopy, BACKGROUNDS } from '../lib/photoAI';
@@ -661,6 +661,19 @@ function BulkEditDialog({ tpl, people, onClose }: { tpl: Template; people: Perso
   const [step, setStep] = useState(1);
   const [target, setTarget] = useState('');
   const [busy, setBusy] = useState(false);
+  // Marathi: the user's saved corrections, and the words in this batch (editable before applying).
+  const [dict, setDict] = useState<Record<string, string>>({});
+  const [fixes, setFixes] = useState<Record<string, string>>({});
+  useEffect(() => {
+    db.meta.get('translitDict').then((m) => setDict((m?.value as Record<string, string>) ?? {}));
+  }, []);
+  const words = useMemo(() => {
+    if (action !== 'marathi') return [];
+    const set = new Set<string>();
+    for (const p of people) for (const w of (p.fields[field] ?? '').match(/[A-Za-z]+/g) ?? []) set.add(w.toLowerCase());
+    return [...set].sort((a, b) => Number(isKnownWord(a, dict)) - Number(isKnownWord(b, dict)) || a.localeCompare(b));
+  }, [action, people, field, dict]);
+  const merged = { ...dict, ...fixes };
 
   const change = (v: string): string => {
     switch (action) {
@@ -672,7 +685,7 @@ function BulkEditDialog({ tpl, people, onClose }: { tpl: Template; people: Perso
         // Adds to every number in the text: "5th" → "6th", "2025-26" → "2026-27".
         return v.replace(/\d+/g, (n) => String(Number(n) + step).padStart(n.length, '0'));
       case 'marathi':
-        return toMarathi(v);
+        return toMarathi(v, merged);
       case 'upper':
         return v.toUpperCase();
       default:
@@ -684,6 +697,11 @@ function BulkEditDialog({ tpl, people, onClose }: { tpl: Template; people: Perso
 
   const run = async () => {
     setBusy(true);
+    if (action === 'marathi' && Object.keys(fixes).length) {
+      // Remember corrections so the same names come out right next time.
+      const changed = Object.fromEntries(Object.entries(fixes).filter(([w, m]) => m.trim() && m !== toMarathi(w, dict)));
+      if (Object.keys(changed).length) await db.meta.put({ key: 'translitDict', value: { ...dict, ...changed } });
+    }
     if (action !== 'clearPrinted' && !tpl.fields.includes(out)) useStore.getState().mutate((t) => t.fields.push(out));
     await db.transaction('rw', db.people, async () => {
       for (const p of people) {
@@ -758,7 +776,25 @@ function BulkEditDialog({ tpl, people, onClose }: { tpl: Template; people: Perso
           Example: “{sample.fields[field] ?? ''}” → “{change(sample.fields[field] ?? '')}”
         </p>
       )}
-      {action === 'marathi' && <p className="hint">Machine transliteration is a starting point – check names before printing.</p>}
+      {action === 'marathi' && words.length > 0 && (
+        <div className="word-review">
+          <p className="hint">
+            Check each word. <b>Orange</b> words were spelled by rules – correct them if needed. Your corrections are remembered for next
+            time.
+          </p>
+          <div className="word-grid">
+            {words.map((w) => {
+              const known = isKnownWord(w, merged);
+              return (
+                <label key={w} className={known ? 'known' : 'check'}>
+                  <span>{w}</span>
+                  <input value={fixes[w] ?? toMarathi(w, dict)} onChange={(e) => setFixes({ ...fixes, [w]: e.target.value })} />
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </Modal>
   );
 }

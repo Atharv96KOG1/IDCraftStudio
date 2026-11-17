@@ -6,6 +6,8 @@
  *    names/addresses, meant as a starting point the user checks and corrects.
  */
 
+import { NAME_DICT } from './marathiNames';
+
 const DEV_DIGITS = '०१२३४५६७८९';
 const isConsonant = (c: string | undefined) => !!c && /[क-हक़-य़ळ]/.test(c);
 const MATRAS = 'ािीुूृेैोौंँॅॉ';
@@ -172,7 +174,16 @@ function wordToMarathi(w: string): string {
   return out;
 }
 
-/** Approximate transliteration; text already in Devanagari is left as it is. */
-export function toMarathi(text: string): string {
-  return text.replace(/[A-Za-z]+/g, (w) => wordToMarathi(w)).replace(/[0-9]/g, (d) => DEV_DIGITS[Number(d)]);
+/**
+ * English → Marathi. Known names/places and the user's own corrections (`dict`)
+ * are used first; other words follow spelling rules (approximate).
+ * Text already in Devanagari is left as it is.
+ */
+export function toMarathi(text: string, dict: Record<string, string> = {}): string {
+  return text
+    .replace(/[A-Za-z]+/g, (w) => dict[w.toLowerCase()] ?? NAME_DICT[w.toLowerCase()] ?? wordToMarathi(w))
+    .replace(/[0-9]/g, (d) => DEV_DIGITS[Number(d)]);
 }
+
+/** Whether a word comes from a dictionary (reliable) or the spelling rules (check it). */
+export const isKnownWord = (w: string, dict: Record<string, string> = {}) => !!(dict[w.toLowerCase()] ?? NAME_DICT[w.toLowerCase()]);

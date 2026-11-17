@@ -123,6 +123,7 @@ const FEATURES = [
 export function WelcomeWizard({ status, onDone }: { status: LicenseStatus; onDone: (s: LicenseStatus) => void }) {
   const [step, setStep] = useState(status.state === 'licensed' ? 2 : 0);
   const [current, setCurrent] = useState(status);
+  const [starting, setStarting] = useState(false);
   return (
     <div className="wiz">
       <div className="wiz-bg">
@@ -163,13 +164,25 @@ export function WelcomeWizard({ status, onDone }: { status: LicenseStatus; onDon
           <>
             <h1>Activate or try free</h1>
             <p className="wiz-sub">
-              {status.state === 'trial'
-                ? `You can use every feature free for ${status.daysLeft} more day${status.daysLeft === 1 ? '' : 's'}. After that a licence key is needed.`
-                : 'Enter your licence key to continue.'}
+              {status.state === 'new'
+                ? `Try every feature free for ${status.daysLeft} days. The trial starts when you click the button and can be used once on this computer.`
+                : status.state === 'trial'
+                  ? `You can use every feature free for ${status.daysLeft} more day${status.daysLeft === 1 ? '' : 's'}. After that a licence key is needed.`
+                  : 'Enter your licence key to continue.'}
             </p>
-            {status.state === 'trial' && (
-              <button className="btn primary wiz-next" onClick={() => setStep(2)}>
-                Start {status.daysLeft}-day free trial
+            {(status.state === 'trial' || status.state === 'new') && (
+              <button
+                className="btn primary wiz-next"
+                disabled={starting}
+                onClick={async () => {
+                  if (status.state === 'new' && bridge) {
+                    setStarting(true);
+                    setCurrent(await bridge.license.startTrial());
+                  }
+                  setStep(2);
+                }}
+              >
+                {status.state === 'new' ? `Start ${status.daysLeft}-day free trial` : 'Continue my free trial'}
               </button>
             )}
             <div className="wiz-or">or enter your licence key</div>

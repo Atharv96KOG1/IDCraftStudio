@@ -270,6 +270,8 @@ class LicenseManager {
     const regFirst = Number(regRead('Installed')) || null;
     const shadow = readShadows();
     if (state?.tampered || shadow.tampered) return { tampered: true };
+    // Never used on this computer: the trial starts only when the user clicks "Start trial".
+    if (!state && !regFirst && !shadow.first) return { fresh: true, first: Date.now(), last: Date.now() };
     if (!state) state = { first: Date.now(), last: Date.now() };
     for (const f of [regFirst, shadow.first]) if (f && f < state.first) state.first = f;
     return state;
@@ -321,6 +323,8 @@ class LicenseManager {
     }
     if (key?.expired) return { ...base, state: 'expired', reason: `Your licence for ${key.licensee} expired. Please renew it.` };
 
+    if (state.fresh) return { ...base, state: 'new', daysLeft: TRIAL_DAYS };
+
     if (state.tampered) {
       // Damaged or edited trial data: end the trial (re-sealed so a later key activation works normally).
       this.writeState({ first: now - (TRIAL_DAYS + 1) * DAY, last: now });
@@ -331,6 +335,13 @@ class LicenseManager {
     const daysLeft = TRIAL_DAYS - Math.floor(Math.max(0, now - state.first) / DAY);
     if (daysLeft > 0) return { ...base, state: 'trial', daysLeft };
     return { ...base, state: 'expired', reason: 'Your free trial has ended. Enter a licence key to continue.' };
+  }
+
+  /** Starts the free trial (first use only; later calls just return the status). */
+  startTrial() {
+    const state = this.readState();
+    if (state.fresh) this.writeState({ first: Date.now(), last: Date.now() });
+    return this.status();
   }
 
   activate(key) {

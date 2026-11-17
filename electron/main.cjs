@@ -170,6 +170,7 @@ app.whenReady().then(() => {
   ipcMain.handle('license:status', () => licenses.status());
   ipcMain.handle('license:activate', (_e, key) => licenses.activate(key));
   ipcMain.handle('license:deactivate', () => licenses.deactivate());
+  ipcMain.handle('license:startTrial', () => licenses.startTrial());
   ipcMain.handle('clipboard:write', (_e, text) => clipboard.writeText(text));
   ipcMain.handle('app:version', () => app.getVersion());
   registerFileIpc();

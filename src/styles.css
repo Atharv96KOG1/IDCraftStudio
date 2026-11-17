@@ -394,3 +394,8 @@ kbd { background: #f3f4f6; border: 1px solid var(--border); border-bottom-width:
 .brand.big .logo-img { width: 44px; height: 44px; border-radius: 11px; }
 img.splash-logo, img.wiz-logo { background: none; object-fit: contain; }
 img.wiz-logo { width: 92px; height: 92px; border-radius: 22px; }
+.word-review { margin-top: 8px; }
+.word-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; max-height: 260px; overflow: auto; padding: 4px; border: 1px solid var(--border); border-radius: 8px; }
+.word-grid label { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 6px; font-size: 12px; }
+.word-grid label span { overflow: hidden; text-overflow: ellipsis; color: #6b7280; }
+.word-grid label.check input { border-color: #f59e0b; background: #fffbeb; }
