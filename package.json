@@ -1,7 +1,7 @@
 {
   "name": "idcraft-studio",
   "productName": "IDCraft Studio",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "IDCraft Studio - ID card designer, bulk generator and printer",
   "author": "IDCraft Studio",
   "private": true,

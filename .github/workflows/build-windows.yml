@@ -46,9 +46,15 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run dist:mac
+      # One architecture at a time: both disk images mount as "IDCraft Studio" and clash if built together.
+      - name: Build Mac installers
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          sudo mdutil -a -i off || true
+          npm run build
+          npx electron-builder --mac dmg --arm64 --publish never
+          npx electron-builder --mac dmg --x64 --publish never
       - name: Smoke test app
         run: |
           APP=$(ls -d release/mac-arm64/*.app | head -1)
