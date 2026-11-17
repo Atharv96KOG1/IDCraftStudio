@@ -166,8 +166,9 @@ app.on('second-instance', () => {
 app.whenReady().then(() => {
   if (!devServerUrl) Menu.setApplicationMenu(null);
   licenses = new LicenseManager(app.getPath('userData'));
+  if (!smokeTest) licenses.syncOnline();
 
-  ipcMain.handle('license:status', () => licenses.status());
+  ipcMain.handle('license:status', () => licenses.checkFresh());
   ipcMain.handle('license:activate', (_e, key) => licenses.activate(key));
   ipcMain.handle('license:deactivate', () => licenses.deactivate());
   ipcMain.handle('license:startTrial', () => licenses.startTrial());

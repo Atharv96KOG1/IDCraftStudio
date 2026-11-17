@@ -257,6 +257,61 @@ function writeShadows(first) {
   }
 }
 
+// ------------------------------------------------------------ online trial check
+
+const SERVER = require('./license-server.cjs');
+const POWERSHELL = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+const BAD_IDS = /^(0+|f+|none|default string|to be filled by o\.e\.m\.|not (applicable|specified)|system serial number)$/i;
+
+let hwCache = null;
+/** Hardware identity that survives reinstalling Windows/macOS: firmware UUID + board/BIOS serials, hashed. */
+function hardwareHash() {
+  if (hwCache) return hwCache;
+  const parts = [];
+  try {
+    if (process.platform === 'win32') {
+      const out = execFileSync(
+        POWERSHELL,
+        ['-NoProfile', '-NonInteractive', '-Command', '(Get-CimInstance Win32_ComputerSystemProduct).UUID; (Get-CimInstance Win32_BaseBoard).SerialNumber; (Get-CimInstance Win32_BIOS).SerialNumber'],
+        { encoding: 'utf8', windowsHide: true, timeout: 15000 },
+      );
+      parts.push(...out.split(/\r?\n/));
+    } else if (process.platform === 'darwin') {
+      const out = execFileSync('/usr/sbin/ioreg', ['-rd1', '-c', 'IOPlatformExpertDevice'], { encoding: 'utf8', timeout: 15000 });
+      parts.push(out.match(/"IOPlatformUUID" = "([^"]+)"/)?.[1] ?? '', out.match(/"IOPlatformSerialNumber" = "([^"]+)"/)?.[1] ?? '');
+    }
+  } catch {
+    /* fall back to the machine ID below */
+  }
+  const good = parts.map((p) => p.trim().replace(/-/g, '')).filter((p) => p && !BAD_IDS.test(p));
+  if (!good.length) good.push(machineId());
+  hwCache = crypto.createHash('sha256').update(`idcraft-hw-v1|${good.join('|')}`).digest('hex');
+  return hwCache;
+}
+
+/** Asks the trial server when this computer's trial started. Returns { first } (0 = never) or throws. */
+async function askServer(start) {
+  if (!SERVER.url || !SERVER.publicKey) throw new Error('no server configured');
+  const hw = hardwareHash();
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const res = await fetch(`${SERVER.url.replace(/\/$/, '')}/v1/trial`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ hw, start }),
+      signal: ctrl.signal,
+    });
+    const r = await res.json();
+    const key = crypto.createPublicKey({ key: Buffer.concat([Buffer.from('302a300506032b6570032100', 'hex'), Buffer.from(SERVER.publicKey, 'base64')]), format: 'der', type: 'spki' });
+    const ok = r.hw === hw && crypto.verify(null, Buffer.from(`${r.hw}|${r.first}|${r.ts}`), key, Buffer.from(String(r.sig), 'base64'));
+    if (!ok) throw new Error('bad server reply');
+    return { first: Number(r.first) || 0 };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 class LicenseManager {
   constructor(userDataDir) {
     this.dir = userDataDir;
@@ -338,9 +393,45 @@ class LicenseManager {
   }
 
   /** Starts the free trial (first use only; later calls just return the status). */
-  startTrial() {
+  async startTrial() {
     const state = this.readState();
-    if (state.fresh) this.writeState({ first: Date.now(), last: Date.now() });
+    if (!state.fresh) return { status: this.status() };
+    let first = Date.now();
+    if (SERVER.url) {
+      // The trial is registered online so reinstalling Windows or the app cannot restart it.
+      try {
+        const r = await askServer(true);
+        if (r.first) first = Math.min(first, r.first);
+      } catch {
+        return { status: this.status(), error: 'Please connect to the internet to start the free trial (needed once). Or enter a licence key.' };
+      }
+    }
+    this.writeState({ first, last: Date.now() });
+    return { status: this.status() };
+  }
+
+  /** On start-up: if the server knows an earlier trial start for this computer, use it. Never blocks. */
+  async syncOnline() {
+    const state = this.readState();
+    if (state.fresh || state.tampered || !SERVER.url) return;
+    try {
+      const r = await askServer(false);
+      if (r.first && r.first < state.first) this.writeState({ first: r.first, last: Math.max(state.last, Date.now()) });
+    } catch {
+      /* offline: try again next start */
+    }
+  }
+
+  /** Before showing "Start trial": was a trial already used on this hardware? */
+  async checkFresh() {
+    const state = this.readState();
+    if (!state.fresh || !SERVER.url) return this.status();
+    try {
+      const r = await askServer(false);
+      if (r.first) this.writeState({ first: r.first, last: Date.now() });
+    } catch {
+      /* offline */
+    }
     return this.status();
   }
 

@@ -124,6 +124,7 @@ export function WelcomeWizard({ status, onDone }: { status: LicenseStatus; onDon
   const [step, setStep] = useState(status.state === 'licensed' ? 2 : 0);
   const [current, setCurrent] = useState(status);
   const [starting, setStarting] = useState(false);
+  const [trialError, setTrialError] = useState<string | null>(null);
   return (
     <div className="wiz">
       <div className="wiz-bg">
@@ -177,7 +178,13 @@ export function WelcomeWizard({ status, onDone }: { status: LicenseStatus; onDon
                 onClick={async () => {
                   if (status.state === 'new' && bridge) {
                     setStarting(true);
-                    setCurrent(await bridge.license.startTrial());
+                    setTrialError(null);
+                    const r = await bridge.license.startTrial();
+                    setStarting(false);
+                    if (r.error) return setTrialError(r.error);
+                    setCurrent(r.status);
+                    // Trial already used on this computer (e.g. after reinstalling Windows).
+                    if (r.status.state === 'expired') return setTrialError('The free trial was already used on this computer. Please enter a licence key.');
                   }
                   setStep(2);
                 }}
@@ -185,6 +192,7 @@ export function WelcomeWizard({ status, onDone }: { status: LicenseStatus; onDon
                 {status.state === 'new' ? `Start ${status.daysLeft}-day free trial` : 'Continue my free trial'}
               </button>
             )}
+            {trialError && <p className="error">{trialError}</p>}
             <div className="wiz-or">or enter your licence key</div>
             <KeyForm
               machineId={status.machineId}

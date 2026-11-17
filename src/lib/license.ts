@@ -14,7 +14,7 @@ interface Bridge {
     status: () => Promise<LicenseStatus>;
     activate: (key: string) => Promise<{ ok: boolean; error?: string; status?: LicenseStatus }>;
     deactivate: () => Promise<LicenseStatus>;
-    startTrial: () => Promise<LicenseStatus>;
+    startTrial: () => Promise<{ status: LicenseStatus; error?: string }>;
   };
   copyText: (t: string) => Promise<void>;
   version: () => Promise<string>;
