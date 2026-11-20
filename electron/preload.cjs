@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('idcraft', {
     activate: (key) => ipcRenderer.invoke('license:activate', String(key)),
     deactivate: () => ipcRenderer.invoke('license:deactivate'),
     startTrial: () => ipcRenderer.invoke('license:startTrial'),
+    retryOnline: () => ipcRenderer.invoke('license:retryOnline'),
   },
   copyText: (text) => ipcRenderer.invoke('clipboard:write', String(text)),
   version: () => ipcRenderer.invoke('app:version'),

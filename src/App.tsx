@@ -70,7 +70,7 @@ export default function App() {
         <div>Loading IDCraft Studio…</div>
       </div>
     );
-  if (license.state === 'expired' || license.state === 'clock') return <ActivationScreen status={license} onDone={setLicense} />;
+  if (license.state === 'expired' || license.state === 'clock' || license.state === 'offline') return <ActivationScreen status={license} onDone={setLicense} />;
   if (license.state === 'new' || (welcome && (license.state !== 'dev' || location.search.includes('wizard'))))
     return (
       <WelcomeWizard

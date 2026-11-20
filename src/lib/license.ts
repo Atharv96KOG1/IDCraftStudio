@@ -1,5 +1,5 @@
 export interface LicenseStatus {
-  state: 'licensed' | 'trial' | 'expired' | 'clock' | 'dev' | 'new';
+  state: 'licensed' | 'trial' | 'expired' | 'clock' | 'dev' | 'new' | 'offline';
   machineId: string;
   daysLeft?: number | null;
   licensee?: string;
@@ -15,6 +15,7 @@ interface Bridge {
     activate: (key: string) => Promise<{ ok: boolean; error?: string; status?: LicenseStatus }>;
     deactivate: () => Promise<LicenseStatus>;
     startTrial: () => Promise<{ status: LicenseStatus; error?: string }>;
+    retryOnline: () => Promise<LicenseStatus>;
   };
   copyText: (t: string) => Promise<void>;
   version: () => Promise<string>;

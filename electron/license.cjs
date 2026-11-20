@@ -13,6 +13,9 @@ const { execFileSync } = require('child_process');
 const REG = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'reg.exe');
 
 const TRIAL_DAYS = 15;
+// During the trial the app must reach the server at least once every this many launches
+// (stops "freeze the clock and stay offline" tricks). Licence keys never need the internet.
+const OFFLINE_LAUNCHES = 10;
 const DAY = 86400000;
 const EPOCH = Date.UTC(2024, 0, 1);
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I to avoid typos
@@ -306,7 +309,7 @@ async function askServer(start) {
     const key = crypto.createPublicKey({ key: Buffer.concat([Buffer.from('302a300506032b6570032100', 'hex'), Buffer.from(SERVER.publicKey, 'base64')]), format: 'der', type: 'spki' });
     const ok = r.hw === hw && crypto.verify(null, Buffer.from(`${r.hw}|${r.first}|${r.ts}`), key, Buffer.from(String(r.sig), 'base64'));
     if (!ok) throw new Error('bad server reply');
-    return { first: Number(r.first) || 0 };
+    return { first: Number(r.first) || 0, ts: Number(r.ts) || 0 };
   } finally {
     clearTimeout(timer);
   }
@@ -373,7 +376,7 @@ class LicenseManager {
       if (key.expires && !state.tampered && now < state.last - DAY) {
         return { ...base, state: 'clock', reason: 'Your computer clock is set in the past. Correct the date and time, then restart.' };
       }
-      this.writeState({ first: state.tampered ? now : state.first, last: Math.max(state.tampered ? 0 : state.last, now) });
+      this.writeState(state.tampered ? { first: now, last: now } : { ...state, last: Math.max(state.last, now) });
       return { ...base, ...key };
     }
     if (key?.expired) return { ...base, state: 'expired', reason: `Your licence for ${key.licensee} expired. Please renew it.` };
@@ -382,12 +385,17 @@ class LicenseManager {
 
     if (state.tampered) {
       // Damaged or edited trial data: end the trial (re-sealed so a later key activation works normally).
-      this.writeState({ first: now - (TRIAL_DAYS + 1) * DAY, last: now });
+      this.writeState({ first: now - (TRIAL_DAYS + 1) * DAY, last: now, srv: 0, off: 0 });
       return { ...base, state: 'expired', reason: 'Your free trial has ended. Enter a licence key to continue.' };
     }
-    if (now < state.last - DAY) return { ...base, state: 'clock', reason: 'Your computer clock is set in the past. Correct the date and time, then restart.' };
-    this.writeState({ first: state.first, last: Math.max(state.last, now) });
-    const daysLeft = TRIAL_DAYS - Math.floor(Math.max(0, now - state.first) / DAY);
+    // The latest real time known: this PC's clock, the newest time seen before, or the server's time.
+    const seen = Math.max(state.last, state.srv || 0);
+    if (now < seen - DAY) return { ...base, state: 'clock', reason: 'Your computer clock is set in the past. Correct the date and time, then restart.' };
+    if (SERVER.url && (state.off || 0) > OFFLINE_LAUNCHES) {
+      return { ...base, state: 'offline', reason: 'Please connect to the internet once to continue your free trial. A licence key works without internet.' };
+    }
+    this.writeState({ ...state, last: Math.max(state.last, now) });
+    const daysLeft = TRIAL_DAYS - Math.floor(Math.max(0, Math.max(now, seen) - state.first) / DAY);
     if (daysLeft > 0) return { ...base, state: 'trial', daysLeft };
     return { ...base, state: 'expired', reason: 'Your free trial has ended. Enter a licence key to continue.' };
   }
@@ -397,29 +405,43 @@ class LicenseManager {
     const state = this.readState();
     if (!state.fresh) return { status: this.status() };
     let first = Date.now();
+    let srv = 0;
     if (SERVER.url) {
       // The trial is registered online so reinstalling Windows or the app cannot restart it.
       try {
         const r = await askServer(true);
         if (r.first) first = Math.min(first, r.first);
+        srv = r.ts;
       } catch {
         return { status: this.status(), error: 'Please connect to the internet to start the free trial (needed once). Or enter a licence key.' };
       }
     }
-    this.writeState({ first, last: Date.now() });
+    this.writeState({ first, last: Date.now(), srv, off: 0 });
     return { status: this.status() };
   }
 
-  /** On start-up: if the server knows an earlier trial start for this computer, use it. Never blocks. */
+  /**
+   * Once per launch during the trial: get the server's real time and the trial start it knows.
+   * Counts launches without a connection; too many and the trial asks to go online once.
+   */
   async syncOnline() {
     const state = this.readState();
     if (state.fresh || state.tampered || !SERVER.url) return;
+    const key = this.keyStatus(Date.now());
+    if (key && !key.expired) return; // licensed: no internet needed
     try {
       const r = await askServer(false);
-      if (r.first && r.first < state.first) this.writeState({ first: r.first, last: Math.max(state.last, Date.now()) });
+      const first = r.first ? Math.min(state.first, r.first) : state.first;
+      this.writeState({ ...state, first, srv: Math.max(state.srv || 0, r.ts), off: 0, last: Math.max(state.last, Date.now()) });
     } catch {
-      /* offline: try again next start */
+      this.writeState({ ...state, off: (state.off || 0) + 1 });
     }
+  }
+
+  /** "Try again" on the connect-to-continue screen. */
+  async retryOnline() {
+    await this.syncOnline();
+    return this.status();
   }
 
   /** Before showing "Start trial": was a trial already used on this hardware? */
@@ -428,7 +450,7 @@ class LicenseManager {
     if (!state.fresh || !SERVER.url) return this.status();
     try {
       const r = await askServer(false);
-      if (r.first) this.writeState({ first: r.first, last: Date.now() });
+      if (r.first) this.writeState({ first: r.first, last: Date.now(), srv: r.ts, off: 0 });
     } catch {
       /* offline */
     }

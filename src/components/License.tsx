@@ -48,6 +48,7 @@ function KeyForm({ machineId, onDone }: { machineId: string; onDone: (s: License
 
 /** Full-screen lock shown when the trial has ended or the licence is invalid. */
 export function ActivationScreen({ status, onDone }: { status: LicenseStatus; onDone: (s: LicenseStatus) => void }) {
+  const [retrying, setRetrying] = useState(false);
   return (
     <div className="lic-screen">
       <div className="lic-card">
@@ -55,8 +56,24 @@ export function ActivationScreen({ status, onDone }: { status: LicenseStatus; on
           <img className="logo-img" src="./icon.png" alt="" />
           <span>IDCraft Studio</span>
         </div>
-        <h2>{status.state === 'clock' ? 'Check your date and time' : 'Activate IDCraft Studio'}</h2>
+        <h2>{status.state === 'clock' ? 'Check your date and time' : status.state === 'offline' ? 'Connect to the internet' : 'Activate IDCraft Studio'}</h2>
         {status.reason && <p className="hint">{status.reason}</p>}
+        {status.state === 'offline' && (
+          <button
+            className="btn primary lic-btn"
+            disabled={retrying}
+            onClick={async () => {
+              if (!bridge) return;
+              setRetrying(true);
+              const s = await bridge.license.retryOnline();
+              setRetrying(false);
+              if (s.state === 'offline') toast('Still no internet connection. Check Wi-Fi or cable and try again.', 'error');
+              else onDone(s);
+            }}
+          >
+            {retrying ? 'Connecting…' : 'I’m online – try again'}
+          </button>
+        )}
         {status.state !== 'clock' && <KeyForm machineId={status.machineId} onDone={onDone} />}
         <p className="hint">Your designs and records are safe and will be there after activation.</p>
       </div>
